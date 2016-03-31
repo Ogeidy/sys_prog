@@ -29,10 +29,9 @@ CLA 	DC 		F'3'
 B       DS      P   
 
 		DS 		0F
-BUF		DC 		PL8'0'  
+BUF		DC 		PL8'0'
 
 
-RBASE   EQU     15
-RRAB    EQU     5   
+// Some comments //
 
-END    EX09             #Конец программы#
+строка + управляющий блок (максимальная длина, фактическая длина)
