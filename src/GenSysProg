@@ -1,4 +1,4 @@
-﻿#! /bin/bash
+﻿#!/bin/bash
 echo "_______________S T A R T    S Y S T E M   G E N E R A T I O N___________________"
 echo
 make
