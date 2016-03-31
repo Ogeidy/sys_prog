@@ -1825,6 +1825,7 @@ int main (int argc, char **argv )
                         return;
                     }
                  }
+                 printf ( "%d: %s\n", NISXTXT, ISXTXT[NISXTXT] );
             }
             printf ( "%s\n", "Переполнение буфера чтения исх.текста" );
             return;
