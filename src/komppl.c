@@ -393,15 +393,14 @@ struct
 */
 
 struct
- {
-  char SYM [4];
-  int  VX;
-  char TYP;
- } VXOD [ NVXOD ] =
+{
+    char SYM [4];
+    int  VX;
+    char TYP;
+} VXOD [ NVXOD ] =
 /*   __________ ___________ _____ ______
     |  NN      |    символ | вход| тип  |
     |__________|___________|_____|______|                                  */
-
 {
   {/*.   1     .*/   "AVI" , 164 , 'N' },
   {/*.   2     .*/   "BUK" ,  93 , 'N' },
@@ -629,13 +628,13 @@ void build_TPR ()                                 /* Построение таб
 /*..........................................................................*/
 
 void mcel ( char* T1, int T2, int T3 )            /* программа заполнения   */
- {                                                /* ячейки стека поставлен-*/
-                          /* ных целей              */
-  strcpy ( CEL [ K ].CEL1, T1 );
-  CEL [ K ].CEL2 = T2;
-  CEL [ K ].CEL3 = T3;
-  K++;
- }
+{                                                 /* ячейки стека поставлен-*/
+                                                  /* ных целей              */
+    strcpy ( CEL [ K ].CEL1, T1 );
+    CEL [ K ].CEL2 = T2;
+    CEL [ K ].CEL3 = T3;
+    K++;
+}
 
 /*..........................................................................*/
 
@@ -651,172 +650,152 @@ void mdst ( char* T1, int T2, int T3, int T4, int T5 )
 
 
 /*..........................................................................*/
-                          /* п р о г р а м м а      */
-int numb ( char* T1, int T2 )                     /* вычисления порядкового */
-                          /* номера строки в табл.  */
-                          /* VXOD, соответствующей  */
-                          /* строке-параметру функц.*/
- {
-  int k;
+                                                  /* п р о г р а м м а      */
+                                                  /* вычисления порядкового */
+                                                  /* номера строки в табл.  */
+                                                  /* VXOD, соответствующей  */
+                                                  /* строке-параметру функц.*/
+int numb ( char* T1, int T2 )
+{
+    int k;
 
-  for ( I1 = 0; I1 < NVXOD; I1++ )
-   {
-    for ( k = 0; k < T2; k++ )
-     {
-      if ( (*(T1+k) != VXOD [ I1 ].SYM [k] ) )
-       goto numb1;
-     }
-  if ( (VXOD [ I1 ].SYM [k] == '\x0') ||
-       (VXOD [ I1 ].SYM [k] == ' '  )
-     )
-    return ( I1 );
+    for ( I1 = 0; I1 < NVXOD; I1++ )
+    {
+        for ( k = 0; k < T2; k++ )
+        {
+            if ( (*(T1+k) != VXOD [ I1 ].SYM [k] ) )
+                goto numb1;
+        }
+        if ( (VXOD [ I1 ].SYM [k] == '\x0') || (VXOD [ I1 ].SYM [k] == ' ') )
+            return ( I1 );
 numb1:
-    continue;
-   }
-  return -1;
- }
+        continue;
+    }
+    return -1;
+}
 
 /*..........................................................................*/
-                          /*   п р о г р а м м а    */
-int sint_ANAL ()                                  /*   построения  дерева   */
-                          /*синтаксического разбора,*/
- {                                                /*выполняющая роль синтак-*/
-                          /*сического анализатора   */
-  I4 = 0;
+                                                  /*   п р о г р а м м а    */
+                                                  /*   построения  дерева   */
+                                                  /*синтаксического разбора,*/
+                                                  /*выполняющая роль синтак-*/
+int sint_ANAL ()                                  /*сического анализатора   */
+{
+    I4 = 0;
 
 L1:
 
-  K = 0;
-  L = 0;
-  I = 0;
-  J = 1;
-  mcel ( "PRO" , I , 999 );
+    K = 0;
+    L = 0;
+    I = 0;
+    J = 1;
+    mcel ( "PRO" , I , 999 );
 
-  if (!TPR [numb ( &STROKA [I], 1 )][numb ( "PRO", 3 )])
-   return 1;
+    if (!TPR[numb(&STROKA[I], 1)][numb("PRO", 3)])
+        return 1;
 
 L2:
 
-  J = VXOD [ numb ( &STROKA [ I ], 1 ) ].VX ;
+    J = VXOD [ numb ( &STROKA [ I ], 1 ) ].VX ;
 
 L3:
 
-  J = SINT [ J ].POSL;
+    J = SINT [ J ].POSL;
 
 L31:
 
-  I++;
+    I++;
 
-  if ( I > I4 )
+    if ( I > I4 )
+        I4 = I;
 
-
-   I4 = I;
-
-  if (VXOD [ numb ( SINT [ J ].DER, 3 ) ].TYP == 'T')
-   {
-
-    if ( STROKA [ I ] == SINT [ J ].DER [ 0 ] )
-     goto L3;
-    else
-     goto L8;
-
-   }
+    if (VXOD [ numb ( SINT [ J ].DER, 3 ) ].TYP == 'T')
+    {
+        if ( STROKA [ I ] == SINT [ J ].DER [ 0 ] )
+            goto L3;
+        else
+            goto L8;
+    }
 
 L4:
 
-  if ( SINT [ SINT [ J ].POSL ].DER [ 0 ] == '*' )
-   {
-    I--;
+    if ( SINT [ SINT [ J ].POSL ].DER [ 0 ] == '*' )
+    {
+        I--;
 
-    if ( !strcmp (SINT [J].DER, CEL [K-1].CEL1 ) )
-     {
-      mdst ( CEL[K-1].CEL1,CEL[K-1].CEL2,CEL[K-1].CEL3,I,J );
+        if ( !strcmp (SINT [J].DER, CEL [K-1].CEL1 ) )
+        {
+            mdst ( CEL[K-1].CEL1,CEL[K-1].CEL2,CEL[K-1].CEL3,I,J );
 
-      if ( !strcmp( CEL[K-1].CEL1 , "PRO" ) )
-       return 0;
-
+            if ( !strcmp( CEL[K-1].CEL1 , "PRO" ) )
+                return 0;
 L5:
-
-      if (TPR [numb (CEL[K-1].CEL1, 3)] [numb (CEL[K-1].CEL1, 3)])
-       {
-    J = VXOD [ numb ( CEL[K-1].CEL1, 3 ) ].VX;
-    goto L3;
-       }
-
+            if (TPR [numb (CEL[K-1].CEL1, 3)] [numb (CEL[K-1].CEL1, 3)])
+            {
+                J = VXOD [ numb ( CEL[K-1].CEL1, 3 ) ].VX;
+                goto L3;
+            }
 L6:
+            J = CEL[K-1].CEL3;
+            K--;
+            goto L3;
+        }
 
-      J = CEL[K-1].CEL3;
-      K--;
-      goto L3;
-     }
+        if (!TPR [numb (SINT[J].DER, 3)] [numb (CEL[K-1].CEL1, 3)])
+            goto L9;
 
-    if (!TPR [numb (SINT[J].DER, 3)] [numb (CEL[K-1].CEL1, 3)])
-     goto L9;
+        mdst ( SINT[J].DER, CEL[K-1].CEL2,0,I,J );
+        J = VXOD [numb (SINT[J].DER, 3)].VX;
+        goto L3;
+    }
 
-    mdst ( SINT[J].DER, CEL[K-1].CEL2,0,I,J );
-    J = VXOD [numb (SINT[J].DER, 3)].VX;
-    goto L3;
-   }
+    if (!TPR [numb (&STROKA [I], 1)] [numb (SINT[J].DER, 3)])
+        goto L8;
 
-  if (!TPR [numb (&STROKA [I], 1)] [numb (SINT[J].DER, 3)])
-   goto L8;
-
-  mcel ( SINT[J].DER,I,J );
-  goto L2;
+    mcel ( SINT[J].DER,I,J );
+        goto L2;
 
 L8:
 
-  I--;
+    I--;
 
 L9:
 
-  if (SINT[J].ALT != 0)
-   {
-    J = SINT[J].ALT;
-    goto L31;
-   }
+    if (SINT[J].ALT != 0)
+    {
+        J = SINT[J].ALT;
+        goto L31;
+    }
 
-  J = SINT[J].PRED;
+    J = SINT[J].PRED;
 
-  if
-   (
-    ( VXOD [numb (SINT[J].DER, 3)].TYP == 'N' )
-    &&
-    ( SINT[J].PRED > 0 )
-   )
-   {
-    mcel (DST[L-1].DST1, DST[L-1].DST2, DST[L-1].DST3);
-
+    if ( ( VXOD [numb (SINT[J].DER, 3)].TYP == 'N' ) && ( SINT[J].PRED > 0 ) )
+    {
+        mcel (DST[L-1].DST1, DST[L-1].DST2, DST[L-1].DST3);
 L10:
+        J = DST[L-1].DST5;
+        L--;
+        goto L9;
+    }
 
-    J = DST[L-1].DST5;
-    L--;
-    goto L9;
-   }
+    if (( VXOD [numb (SINT[J].DER, 3)].TYP == 'N' ) && ( SINT[J].PRED == 0 ) )
+    {
+        if (!strcmp ( CEL[K-1].CEL1, DST[L-1].DST1 ) )
+            goto L6;
+        else
+            goto L10;
+    }
 
-  if
-   (
-    ( VXOD [numb (SINT[J].DER, 3)].TYP == 'N' )
-    &&
-    ( SINT[J].PRED == 0 )
-   )
-   {
-    if (!strcmp ( CEL[K-1].CEL1, DST[L-1].DST1 ) )
-     goto L6;
+    if ( SINT[J].PRED > 0 )
+        goto L8;
+
+    J = CEL[K-1].CEL3;
+    K--;
+
+    if ( J == 999 )
+        return 2;
     else
-     goto L10;
-   }
-
-  if ( SINT[J].PRED > 0 )
-   goto L8;
-
-  J = CEL[K-1].CEL3;
-  K--;
-
-  if ( J == 999 )
-   return 2;
-  else
-   goto L8;
+        goto L8;
 
  }
 
