@@ -1708,22 +1708,22 @@ int main (int argc, char **argv )
     }
                                                   /* рабочие переменные:    */
     FILE *fp;                                     /* - указатель на файл;   */
-    char *ptr=argv[1];                            /* - указатель на первый  */
+    char *ptr = argv[1];                          /* - указатель на первый  */
                                                   /*параметр командной стр. */
 
-    strcpy ( NFIL, ptr );                         /*изъять имя транслируемой*/
+    strcpy(NFIL, ptr);                            /*изъять имя транслируемой*/
                                                   /*программы из командной  */
                                                   /*строки в рабочее поле   */
 
                                                   /* проверка типа исх.файла*/
-    if ( strcmp ( &NFIL [ strlen ( NFIL )-3 ], "pli" ) )
+    if ( strcmp( &NFIL[strlen(NFIL)-3], "pli") )
     {
         printf ( "%s\n", "Неверный тип файла с исходным текстом" );
         return;
     }
     else                                          /* если тип файла "pli",то*/
     {                                             /*пытаемся открыть файл   */
-        if ( (fp = fopen ( NFIL , "rb" )) == NULL )   
+        if ( (fp = fopen(NFIL, "rb")) == NULL )   
         {
             printf ( "%s\n", "Не найден файл с исходным текстом" );
             return;
@@ -1732,7 +1732,7 @@ int main (int argc, char **argv )
         {                                         /*  ISXTXT                */
             for ( NISXTXT = 0; NISXTXT <= MAXNISXTXT; NISXTXT++ )
             {
-                if ( !fread ( ISXTXT [NISXTXT], 80, 1, fp ) )
+                if ( !fread(ISXTXT[NISXTXT], 80, 1, fp) )
                 {
                     if ( feof(fp) )               /* в конце файла идем на  */
                         goto main1;               /* метку  main1           */
@@ -1742,7 +1742,7 @@ int main (int argc, char **argv )
                         return;
                     }
                  }
-                 printf ( "%d: %s\n", NISXTXT, ISXTXT[NISXTXT] );
+                 printf ( "%d: %s", NISXTXT, ISXTXT[NISXTXT] );
             }
             printf ( "%s\n", "Переполнение буфера чтения исх.текста" );
             return;
