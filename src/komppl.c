@@ -71,15 +71,15 @@ union                                             /*шаблон для гене
         char PROB3;
         char COMM   [52];
     } _BUFCARD;
-} ASS_CARD ;
+} ASS_CARD;
 
-char ASSTXT[MAXLTXT][80];                      /*массив для хранения     */
+char ASSTXT[MAXLTXT][80];                         /*массив для хранения     */
                                                   /*выходного текста на     */
                                                   /*АССЕМБЛЕРЕ IBM 370      */
 
 int  IASSTXT;                                     /*индекс выходного массива*/
 
-char FORMT[MAXFORMT][9];                        /*массив для форматирован-*/
+char FORMT[MAXFORMT][9];                          /*массив для форматирован-*/
                                                   /*ного (в виде последова-*/
                                                   /*тельности 9-ти позицион-*/
                                                   /*ных строк-лексем) пред- */
@@ -555,7 +555,7 @@ void compress_ISXTXT()                            /* сического анал
         {
             if( ISXTXT[I1][I2] != '\x0' )
             {
-                if( ISXTXT[I1][I2] == ' ' && 
+                if( (ISXTXT[I1][I2] == ' ' || ISXTXT[I1][I2] == '\n') && 
                    ( PREDSYM == ' ' || PREDSYM == ';' || 
                       PREDSYM == ')' || PREDSYM == ':' || PREDSYM == '(') )
                 {
@@ -873,7 +873,7 @@ FORM1:
                                                   /* записи очередной сгене-*/
                                                   /* рированной записи вы-  */
                                                   /* ходного файла в массив */
-void ZKARD()                                     /* ASSTXT                 */
+void ZKARD()                                      /* ASSTXT                 */
 {
     char i;
     memcpy(ASSTXT[IASSTXT++], ASS_CARD.BUFCARD, 80);
@@ -1036,11 +1036,11 @@ ODC11:                                            /* если идентифик
 int OEN1()
 {
     char i = 0;
-    FORM();                                      /* форматирование ПЛ1-опе-*/
+    FORM();                                       /* форматирование ПЛ1-опе-*/
                                                   /* ратора END             */
 
                                                   /* если вторй терм опера- */
-    for( i = 0; i < ISYM; i++ )                  /* тора END записан в табл*/
+    for( i = 0; i < ISYM; i++ )                   /* тора END записан в табл*/
     {                                             /* SYM и его тип = "P",то:*/
     if( !strcmp( SYM[i].NAME, FORMT[1] ) &&
            (SYM[i].TYPE == 'P') &&
@@ -1074,15 +1074,15 @@ int OPA1()
                                                   /* OPR - "операт.ПЛ1-PROC"*/
 int OPR1()
 {
-    FORM();                                      /* форматируем оператор   */
+    FORM();                                       /* форматируем оператор   */
                                                   /* ПЛ1 PROC               */
 
-    strcpy( SYM[ISYM].NAME, FORMT[0] );        /* перепишем имя ПЛ1-прог-*/
+    strcpy( SYM[ISYM].NAME, FORMT[0] );           /* перепишем имя ПЛ1-прог-*/
                                                   /* раммы в табл. SYM,     */
 
-    SYM[ISYM].TYPE   = 'P';                      /* установим тип этого    */
+    SYM[ISYM].TYPE   = 'P';                       /* установим тип этого    */
                                                   /* имени = 'P'            */
-    SYM[ISYM++].RAZR[0] = '\x0';                /* установим разрядность  */
+    SYM[ISYM++].RAZR[0] = '\x0';                  /* установим разрядность  */
                                                   /* равной 0               */
 
     return 0;                                     /* успешное завершение    */
@@ -1437,7 +1437,7 @@ int OEN2()
                                                   /* поле построчного комен-*/
                                                   /* тария                  */
 
-                ZKARD();                         /* запомнить операцию     */
+                ZKARD();                          /* запомнить операцию     */
                                                   /*    Ассемблера          */
             }
         }
@@ -1449,21 +1449,21 @@ int OEN2()
                                                   /* рабочий регистры общего*/
                                                   /* назначения             */
 
-    memcpy( ASS_CARD._BUFCARD.METKA, "RBASE", 5 ); /* формирование EQU-псев- */
-    memcpy( ASS_CARD._BUFCARD.OPERAC, "EQU",3 );   /* дооперации определения */
-    memcpy( ASS_CARD._BUFCARD.OPERAND, "15", 2 );  /* номера базового регист-*/
+    memcpy( ASS_CARD._BUFCARD.METKA, "RBASE", 5 );  /* формирование EQU-псев- */
+    memcpy( ASS_CARD._BUFCARD.OPERAC, "EQU",3 );    /* дооперации определения */
+    memcpy( ASS_CARD._BUFCARD.OPERAND, "15", 2 );   /* номера базового регист-*/
                                                     /* ра общего назначения   */
                                                     /*           и            */
-    ZKARD();                                       /* запоминание ее         */
+    ZKARD();                                        /* запоминание ее         */
 
-    memcpy( ASS_CARD._BUFCARD.METKA, "RRAB", 4 );  /* формирование EQU-псев- */
-    memcpy( ASS_CARD._BUFCARD.OPERAC, "EQU",3 );   /* дооперации определения */
-    memcpy( ASS_CARD._BUFCARD.OPERAND, "5", 1 );   /* номера базового регист-*/
+    memcpy( ASS_CARD._BUFCARD.METKA, "RRAB", 4 );   /* формирование EQU-псев- */
+    memcpy( ASS_CARD._BUFCARD.OPERAC, "EQU", 3 );   /* дооперации определения */
+    memcpy( ASS_CARD._BUFCARD.OPERAND, "5", 1 );    /* номера базового регист-*/
                                                     /* ра общего назначения   */
                                                     /*            и           */
-    ZKARD();                                       /* запоминание ее         */
+    ZKARD();                                        /* запоминание ее         */
 
-    memcpy( ASS_CARD._BUFCARD.OPERAC, "END", 3 );  /* формирование кода ас-  */
+    memcpy( ASS_CARD._BUFCARD.OPERAC, "END", 3 );   /* формирование кода ас-  */
                                                     /* семблеровской псевдо-  */
                                                     /* операции END,          */
     i = 0;
@@ -1754,7 +1754,8 @@ int main(int argc, char **argv )
                         return;
                     }
                  }
-                 //printf( "%d: %s#\n", NISXTXT, ISXTXT[NISXTXT] );  //MY_PRINT
+                 printf( "%d: %s#\n", NISXTXT, ISXTXT[NISXTXT] );  //MY_PRINT
+                 
                  int i;
                  for(i = 0; i < 80; i++)
                  {
@@ -1791,7 +1792,9 @@ int kkkk;
             "ошибка синтаксиса в исх.тексте -> ",      
             "\"...",&STROKA[I4], "...\"");
         printf("%s\n", "трансляция прервана");
+        
         printf( "\n Error:%d \n", kkkk );  //MY_PRINT
+        
         return;                                 
     }
     else                                          /* иначе делаем           */
