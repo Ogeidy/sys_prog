@@ -1,4 +1,4 @@
-﻿/*
+/*
 ***** Н А Ч А Л О   файла компилятора с языка высокого уровня
 */
 
@@ -886,7 +886,7 @@ FORM1:
         {
             FORMT[IFORMT][i-j] = '\x0';
 
-            //printf("IFORMT:%d,FORMT:%s \n", IFORMT,(char*)FORMT[IFORMT]);    //MY_PRINT
+            printf("IFORMT:%d,FORMT:%s \n", IFORMT,(char*)FORMT[IFORMT]);    //MY_PRINT
 
 
             IFORMT ++;
@@ -1029,20 +1029,39 @@ int ODC1()
                                                   /* по ошибке              */
     }
 
-    strcpy( SYM[ISYM].NAME, FORMT[1] );           /* при отсутствии повтор- */
-    strcpy( SYM[ISYM].RAZR, FORMT[4] );           /* ного объявления иденти-*/
-                                                  /* фикатора запоминаем его*/
-                                                  /* вместе с разрядностью в*/
-                                                  /* табл.SYM               */
+    strcpy( SYM[ISYM].NAME, FORMT[1] ); 
 
-    if( !strcmp( FORMT[2], "BIN" ) &&             /* если идентификатор оп- */
-            !strcmp( FORMT[3], "FIXED" ) )        /* ределен как bin fixed, */
+    if( !strcmp( FORMT[2], "BIN" ) && !strcmp( FORMT[3], "FIXED" ) )         
     {
-        SYM[ISYM].TYPE = 'B';                     /* то устанавливаем тип   */
-                                                  /* идентификатора = 'B' и */
-        goto ODC11;                               /* идем на продолжение об-*/
-                                                  /* работки, а             */
-    }
+        SYM[ISYM].TYPE = 'B';   
+                 
+        strcpy( SYM[ISYM].RAZR, FORMT[4] );   
+
+        if( !strcmp(FORMT[5], "INIT") )          
+            strcpy(SYM[ISYM].INIT, FORMT[6]);                                       
+        else                                         
+            strcpy(SYM[ISYM].INIT, "0B");   
+
+    } 
+    else if ( !strcmp( FORMT[2], "BIT" ) )
+    {
+        SYM[ISYM].TYPE = 'L';   
+        
+        strcpy( SYM[ISYM].RAZR, FORMT[3] );   
+
+        if( !strcmp(FORMT[4], "INIT") )          
+            strcpy(SYM[ISYM].INIT, FORMT[5]);                                       
+        else                                         
+            strcpy(SYM[ISYM].INIT, "0B");  
+    }  
+    else if ( !strcmp( FORMT[2], "DEC" ) && !strcmp( FORMT[3], "FIXED" ) )
+    {
+        SYM[ISYM].TYPE = 'D';   
+        
+        strcpy( SYM[ISYM].RAZR, FORMT[3] );   
+        SYM[ISYM].RAZR[0] = '3';                 /*Устанавливаем разрядность 3 */                             
+        strcpy(SYM[ISYM].INIT, "0B");  
+    }                                                                                                     
     else                                          /* иначе                  */
     {
         SYM[ISYM].TYPE = 'U';                     /* устанавливаем тип иден-*/
@@ -1051,14 +1070,7 @@ int ODC1()
                                                   /* по ошибке              */
     }   
 
-ODC11:                                            /* если идентификатор     */
-                                                  /* имеет начальную иници- */
-    if( !strcmp( FORMT[5], "INIT" )  )            /* ализацию, то запомина- */
-        strcpy( SYM[ISYM++].INIT, FORMT[6] );     /* ем в табл. SYM это на- */
-                                                  /* чальное значение, а    */
-    else                                          /* иначе                  */
-        strcpy( SYM[ISYM++].INIT, "0B" );         /* инициализируем иденти- */
-                                                  /* фикатор нулем          */
+    ISYM++;
 
     return 0;                                     /* успешное завешение     */
                                                   /* программы              */
@@ -1079,11 +1091,9 @@ int OEN1()
                                                   /* если вторй терм опера- */
     for( i = 0; i < ISYM; i++ )                   /* тора END записан в табл*/
     {                                             /* SYM и его тип = "P",то:*/
-    if( !strcmp( SYM[i].NAME, FORMT[1] ) &&
-           (SYM[i].TYPE == 'P') &&
-            strlen(SYM[i].NAME) ==
-            strlen( FORMT[1] ) )
-     return 0;                                    /* успешное завершение    */
+        if( !strcmp( SYM[i].NAME, FORMT[1] ) && (SYM[i].TYPE == 'P')
+                && strlen(SYM[i].NAME) == strlen( FORMT[1] ) )
+            return 0;                             /* успешное завершение    */
                                                   /* программы              */
     }
 
@@ -1192,10 +1202,9 @@ int AVI2()
     if( IFORMT == 1 )                                                   /* если правая часть одно-*/
     {                                                                   /* термовая, то:          */
         for( i = 0; i < ISYM; i++ )                                     /* ищем этот терм в табли-*/
-        {                                                               /* це имен  и             */
-            if( !strcmp( SYM[i].NAME, FORMT[0] )  &&                    /* если находим, то:      */
-                    strlen( SYM[i].NAME ) ==
-                    strlen( FORMT[0] ) )
+        {                                                              /* це имен  и             */
+            if( !strcmp(SYM[i].NAME, FORMT[0])  &&                      /* если находим, то:      */
+                    strlen(SYM[i].NAME) == strlen(FORMT[0]) )
             {
                 if( SYM[i].TYPE == 'B' )                                /* в случае типа=bin fixed*/
                 {
@@ -1222,11 +1231,32 @@ int AVI2()
                                                                         /* семблера  и            */
                     return 0;                                           /* завершить программу    */
                 }
+                else if( SYM[i].TYPE == 'L' )                           /* в случае типа=bit      */
+                {
+                    memcpy(ASS_CARD._BUFCARD.OPERAC, "LH", 2);
+                    strcpy( ASS_CARD._BUFCARD.OPERAND, "RRAB," );                                            
+                    strcat( ASS_CARD._BUFCARD.OPERAND, FORMT[0]); 
+                                                                        /* вставляем разделитель  */
+                    ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
+                 
+                                                                        /* и построчный коментарий*/
+                    memcpy( ASS_CARD._BUFCARD.COMM, "Load the variable to the register", 33 );   
+                    
+                    ZKARD();
+
+                    return 0;
+                }
+                else if( SYM[i].TYPE == 'D' )                           /* в случае типа=dec fixed*/
+                {
+                    //Not implemented
+                    return 3; 
+                }
                 else                                                    /* если тип терма не bin  */
                     return 3;                                           /* fixed,то выход по ошиб.*/
             }
-        }                                                               /* если терм-идентификатор*/
-            return 4;                                                   /* неопределен, то выход  */
+        }  
+        printf("FUCK\n");                                                             /* если терм-идентификатор*/
+        return 4;                                                       /* неопределен, то выход  */
                                                                         /* по ошибке              */    
     }
     else                                                                /* если правая часть ариф-*/
@@ -1541,18 +1571,18 @@ int OPA2()
             if( SYM[i].TYPE == 'B' )              /* если этот идентификатор*/
             {                                     /* имеет тип bin fixed,то:*/
 
-                if( strcmp(SYM[i].RAZR, "15") <= 0 )               /* если bin fixed(15),то:*/
+                if( strcmp(SYM[i].RAZR, "15") <= 0 )                    /* если bin fixed(15),то:*/
                                 
-                    memcpy( ASS_CARD._BUFCARD.OPERAC,"STH", 3 );   /* сформировать команду   */
-                                                                    /* записи полуслова       */
-                else                                                /* иначе:                 */
-                    memcpy( ASS_CARD._BUFCARD.OPERAC, "ST", 2 );   /* команду записи слова   */
+                    memcpy( ASS_CARD._BUFCARD.OPERAC,"STH", 3 );        /* сформировать команду   */
+                                                                        /* записи полуслова       */
+                else                                                    /* иначе:                 */
+                    memcpy( ASS_CARD._BUFCARD.OPERAC, "ST", 2 );        /* команду записи слова   */
                             
 
-                strcpy( ASS_CARD._BUFCARD.OPERAND,"RRAB," );   /*       доформировать    */
-                                                               /*          операнды      */
+                strcpy( ASS_CARD._BUFCARD.OPERAND,"RRAB," );            /*       доформировать    */
+                                                                        /*          операнды      */
 
-                strcat(ASS_CARD._BUFCARD.OPERAND, FORMT[0]);  /*           команды      */
+                strcat(ASS_CARD._BUFCARD.OPERAND, FORMT[0]);            /*           команды      */
                               
 
                 ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
@@ -1563,6 +1593,49 @@ int OPA2()
                 ZKARD();                                       /* запомнить операцию     */
                                                                /* Ассемблера  и          */
                 return 0;                                      /* завершить программу    */
+            }
+            else if( SYM[i].TYPE == 'L' )                           /* в случае типа=bit      */
+            {
+                //Not implemented
+                return 3; 
+
+                memcpy(ASS_CARD._BUFCARD.OPERAC, "LH", 2);
+                strcpy( ASS_CARD._BUFCARD.OPERAND, "RRAB," );                                            
+                strcat( ASS_CARD._BUFCARD.OPERAND, FORMT[0]); 
+                                                                    /* вставляем разделитель  */
+                ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
+             
+                                                                    /* и построчный коментарий*/
+                memcpy( ASS_CARD._BUFCARD.COMM, "Load the variable to the register", 33 );   
+                
+                ZKARD();
+
+                return 0;
+            }
+            else if( SYM[i].TYPE == 'D' )                           /* в случае типа=dec fixed*/
+            {
+                int j;
+                for( j = 0; j < ISYM; j++ )
+                {                                                                                  
+                    if( !strcmp(SYM[j].NAME, FORMT[1]) && strlen(SYM[j].NAME) ==  strlen(FORMT[1]) )                                              
+                    {
+                        if( SYM[j].TYPE == 'L' )              /* если этот идентификатор*/
+                        {
+                            memcpy(ASS_CARD._BUFCARD.OPERAC, "LA", 2);
+                            strcpy( ASS_CARD._BUFCARD.OPERAND, "RWRK," );                                            
+                            strcat( ASS_CARD._BUFCARD.OPERAND, FORMT[0]); 
+                                                                                /* вставляем разделитель  */
+                            ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
+                         
+                                                                                /* и построчный коментарий*/
+                            memcpy( ASS_CARD._BUFCARD.COMM, "Load the variable to the register", 33 );   
+                            
+                            ZKARD();
+                        }
+                        //other not implemented
+                        return 3;
+                    }
+                }
             }
             else                                               /* если идентификатор не  */
                                                                /* имеет тип bin fixed,то:*/
@@ -1879,6 +1952,7 @@ int kkkk;
                     "неопределенный идентификатор: ",
                     (char*)&FORMT[IFORMT-1], " в исх.тексте -> \"...",
                     &STROKA[DST[I2].DST2], "...\"" );
+                printf( "\n Error:%d \n", kkkk );                                           //MY_PRINT
                 break;
 
             case  5:                              /*если код завершения = 5,*/
