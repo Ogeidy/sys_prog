@@ -1,0 +1,17 @@
+X09
+         BALR  RBASE,0     
+         USING *,RBASE     
+         L     RRAB,NULL   
+         IC    RRAB,A      
+         SRL   RRAB,5      
+         CVD   RRAB,TEMPDEC
+         ZAP   B,TEMPDEC   
+         BCR   15,14       
+A        DC    BL5'101'
+B        DC    PL3'0'      
+         DS    0F          
+TEMPDEC  DC    PL8'0'      
+NULL     DC    F'0'
+RBASE    EQU   15          
+RRAB     EQU   5           
+         END   EX09        

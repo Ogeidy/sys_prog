@@ -13,7 +13,7 @@
                                                   /* п р е д е л ь н ы е    */
                                                   /* размеры:               */
 #define MAXNISXTXT 50                             /* - исходного текста;    */
-#define NSINT     201                             /* - табл.синтакс.правил; */
+#define NSINT     220                             /* - табл.синтакс.правил; */
 #define NCEL       20                             /* - стека целей;         */
 #define NDST      500                             /* - стека достижений;    */
 #define NVXOD      53                             /* - табл.входов;         */
@@ -202,7 +202,7 @@ struct
  {/*.   49     .*/    50 ,    48 , "   " ,    0 },
  {/*.   50     .*/    51 ,    49 , "B  " ,  187 },
  {/*.   51     .*/    52 ,    50 , "I  " ,    0 },
- {/*.   52     .*/    53 ,    51 , "N  " ,    0 },
+ {/*.   52     .*/    53 ,    51 , "N  " ,  201 },
  {/*.   53     .*/    54 ,    52 , "   " ,    0 },
  {/*.   54     .*/    55 ,    53 , "F  " ,    0 },
  {/*.   55     .*/    56 ,    54 , "I  " ,    0 },
@@ -368,7 +368,7 @@ struct
  {/*.  186     .*/     0 ,    73 , "*  " ,    0 },
 
 
- {/*.  187     .*/   188 ,    49 , "C  " ,    0 },
+ {/*.  187     .*/   188 ,    49 , "C  " ,  208 },
  {/*.  188     .*/   189 ,   187 , "H  " ,    0 },
  {/*.  189     .*/   190 ,   188 , "A  " ,    0 },
  {/*.  190     .*/   191 ,   189 , "R  " ,    0 },
@@ -383,7 +383,34 @@ struct
 
  {/*.  198     .*/   199 ,     0 , "*  " ,    0 },
  {/*.  199     .*/   200 ,   198 , "ZNK" ,    0 },
- {/*.  200     .*/     0 ,   199 , "*  " ,    0 }
+ {/*.  200     .*/     0 ,   199 , "*  " ,    0 },
+
+
+
+
+ //OUR CODE
+ {/*.   201     .*/  202 ,    51 , "T  " ,    0 },
+ {/*.   202     .*/  203 ,   201 , "(  " ,    0 },
+ {/*.   203     .*/  204 ,   202 , "RZR" ,    0 },
+ {/*.   204     .*/  205 ,   203 , ")  " ,    0 },
+ {/*.   205     .*/  206 ,   204 , ";  " ,   65 },
+ {/*.   206     .*/  207 ,   205 , "ODC" ,    0 },
+ {/*.   207     .*/    0 ,   206 , "*  " ,    0 },
+
+
+
+ {/*.   208     .*/  209 ,    49 , "D  " ,    0 },
+ {/*.   209     .*/  210 ,   208 , "E  " ,    0 },
+ {/*.   210     .*/  211 ,   209 , "C  " ,    0 },
+ {/*.   211     .*/  212 ,   210 , "   " ,    0 },
+ {/*.   212     .*/  213 ,   211 , "F  " ,    0 },
+ {/*.   213     .*/  214 ,   212 , "I  " ,    0 },
+ {/*.   214     .*/  215 ,   213 , "X  " ,    0 },
+ {/*.   215     .*/  216 ,   214 , "E  " ,    0 },
+ {/*.   216     .*/  217 ,   215 , "D  " ,    0 },
+ {/*.   217     .*/  218 ,   216 , ";  " ,   65 },
+ {/*.   218     .*/  219 ,   217 , "ODC" ,    0 },
+ {/*.   219     .*/  0   ,   218 , "*  " ,    0 }
 };
 
 /*
@@ -518,7 +545,7 @@ char TPR[NVXOD][NNETRM] =
   {/*  O*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0  },
   {/*  T*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0  },
   {/*  S*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0  },
-  {/* (*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0  },
+  {/*  (*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0  },
   {/*  )*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0  },
   {/*  ;*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0  },
   {/*   */ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0  },
@@ -550,7 +577,6 @@ void compress_ISXTXT()                            /* сического анал
     I3 = 0;
     for( I1 = 0 ; I1 < NISXTXT ; I1++ )
     {
-        printf("I1:%d \n", I1);
         for( I2 = 0 ; I2 < 80 ; I2++ )
         {
             if( ISXTXT[I1][I2] != '\x0' )
@@ -589,17 +615,19 @@ L2:             continue;
     }
     
     STROKA[I3] = '\x0';
-    printf( "\nSTROKA:%s\n", STROKA );  //MY_PRINT
-    int i;
-    for(i = 0; i <= I3; i++)
-    {
-        printf("%d:%c ",i, STROKA[i]);
-    }
-    printf( "\n");
-    for(i = 0; i <= I3; i++)
-    {
-        printf("%d:%d ",i, STROKA[i]);
-    }
+
+    printf( "\nSTROKA: %s\n", STROKA );        //MY_PRINT
+
+    // int i;
+    // for(i = 0; i <= I3; i++)
+    // {
+    //     printf("%d:%c ",i, STROKA[i]);
+    // }
+    // printf( "\n");
+    // for(i = 0; i <= I3; i++)
+    // {
+    //     printf("%d:%d ",i, STROKA[i]);
+    // }
 }
 
 /*..........................................................................*/
@@ -857,6 +885,10 @@ FORM1:
             STROKA[i] == '*')
         {
             FORMT[IFORMT][i-j] = '\x0';
+
+            //printf("IFORMT:%d,FORMT:%s \n", IFORMT,(char*)FORMT[IFORMT]);    //MY_PRINT
+
+
             IFORMT ++;
             j = i+1;
             goto FORM1;
@@ -876,8 +908,12 @@ FORM1:
 void ZKARD()                                      /* ASSTXT                 */
 {
     char i;
-    memcpy(ASSTXT[IASSTXT++], ASS_CARD.BUFCARD, 80);
-    ASSTXT [ IASSTXT ][27] = '\0';
+    memcpy(ASSTXT[IASSTXT], ASS_CARD.BUFCARD, 80);
+    ASSTXT[IASSTXT][79] = '\0';
+
+    printf( "aa: %s\n", ASSTXT[IASSTXT] );
+
+    IASSTXT++;
 
     for( i = 0; i < 79; i++ )
         ASS_CARD.BUFCARD[i] = ' ';
@@ -981,35 +1017,35 @@ int MAN1()
 int ODC1()
 {
     int i;
-    FORM();                                      /* форматирование ПЛ1-опе-*/
+    FORM();                                       /* форматирование ПЛ1-опе-*/
                                                   /* ратора DCL             */
 
-    for( i = 0; i < ISYM; i++ )                  /* если фиксируем повтор- */
+    for( i = 0; i < ISYM; i++ )                   /* если фиксируем повтор- */
     {                                             /* повторное объявление   */
-        if(!strcmp( SYM[i].NAME, FORMT[1] ) &&/* второго терма оператора*/
-            strlen( SYM[i].NAME ) ==            /* DCL, то                */
+        if(!strcmp( SYM[i].NAME, FORMT[1] ) &&    /* второго терма оператора*/
+            strlen( SYM[i].NAME ) ==              /* DCL, то                */
             strlen( FORMT[1] ))
             return 6;                             /* завершение программы   */
                                                   /* по ошибке              */
     }
 
-    strcpy( SYM[ISYM].NAME, FORMT[1] );        /* при отсутствии повтор- */
-    strcpy( SYM[ISYM].RAZR, FORMT[4] );        /* ного объявления иденти-*/
+    strcpy( SYM[ISYM].NAME, FORMT[1] );           /* при отсутствии повтор- */
+    strcpy( SYM[ISYM].RAZR, FORMT[4] );           /* ного объявления иденти-*/
                                                   /* фикатора запоминаем его*/
                                                   /* вместе с разрядностью в*/
                                                   /* табл.SYM               */
 
-    if( !strcmp( FORMT[2], "BIN" ) &&          /* если идентификатор оп- */
-            !strcmp( FORMT[3], "FIXED" ) )      /* ределен как bin fixed, */
+    if( !strcmp( FORMT[2], "BIN" ) &&             /* если идентификатор оп- */
+            !strcmp( FORMT[3], "FIXED" ) )        /* ределен как bin fixed, */
     {
-        SYM[ISYM].TYPE = 'B';                    /* то устанавливаем тип   */
+        SYM[ISYM].TYPE = 'B';                     /* то устанавливаем тип   */
                                                   /* идентификатора = 'B' и */
         goto ODC11;                               /* идем на продолжение об-*/
                                                   /* работки, а             */
     }
     else                                          /* иначе                  */
     {
-        SYM[ISYM].TYPE = 'U';                    /* устанавливаем тип иден-*/
+        SYM[ISYM].TYPE = 'U';                     /* устанавливаем тип иден-*/
                                                   /* тификатора = 'U'  и    */
         return 2;                                 /* завершаем программу    */
                                                   /* по ошибке              */
@@ -1017,11 +1053,11 @@ int ODC1()
 
 ODC11:                                            /* если идентификатор     */
                                                   /* имеет начальную иници- */
-    if( !strcmp( FORMT[5], "INIT" )  )         /* ализацию, то запомина- */
-        strcpy( SYM[ISYM++].INIT, FORMT[6] );  /* ем в табл. SYM это на- */
+    if( !strcmp( FORMT[5], "INIT" )  )            /* ализацию, то запомина- */
+        strcpy( SYM[ISYM++].INIT, FORMT[6] );     /* ем в табл. SYM это на- */
                                                   /* чальное значение, а    */
     else                                          /* иначе                  */
-        strcpy( SYM[ISYM++].INIT, "0B" );       /* инициализируем иденти- */
+        strcpy( SYM[ISYM++].INIT, "0B" );         /* инициализируем иденти- */
                                                   /* фикатор нулем          */
 
     return 0;                                     /* успешное завешение     */
@@ -1180,7 +1216,7 @@ int AVI2()
                         ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
                      
                                                                         /* и построчный коментарий*/
-                        memcpy( ASS_CARD._BUFCARD.COMM, "Загрузка переменной в регистр", 29 );     
+                        memcpy( ASS_CARD._BUFCARD.COMM, "Load the variable to the register", 33 );     
                      
                         ZKARD();                                        /* запомнить операцию ас- */
                                                                         /* семблера  и            */
@@ -1244,7 +1280,7 @@ int AVI2()
                     ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';
                           
                                                                         /* - построчный коментарий*/
-                    memcpy(ASS_CARD._BUFCARD.COMM, "Формирование промежуточного значения", 36);
+                    memcpy(ASS_CARD._BUFCARD.COMM, "Formation of intermediatevalue", 30);
                     
                     ZKARD();                                            /* запоминание ассембле-  */
                                                                         /* ровской операции       */
@@ -1382,7 +1418,7 @@ int OEN2()
 
     memcpy( ASS_CARD._BUFCARD.OPERAND,"15,14", 5 );/* операнды команды и     */
 
-    memcpy( ASS_CARD._BUFCARD.COMM,"Выход из программы", 18 );                
+    memcpy( ASS_CARD._BUFCARD.COMM,"Exit from the programm", 22 );                
                                                   /* поле построчного комен-*/
                                                   /* тария                  */
 
@@ -1434,7 +1470,7 @@ int OEN2()
                                                   /* замыкающий апостроф    */
                                                   /*          и             */
 
-                memcpy(ASS_CARD._BUFCARD.COMM,"Определение переменной", 22);          
+                memcpy(ASS_CARD._BUFCARD.COMM,"Definition of variable", 22);          
                                                   /* поле построчного комен-*/
                                                   /* тария                  */
 
@@ -1472,7 +1508,7 @@ int OEN2()
     while( FORMT[1][i] != '\x0' )                        /* ее операнда            */
         ASS_CARD._BUFCARD.OPERAND[i] = FORMT[1][i++];   /*         и              */
 
-    memcpy(ASS_CARD._BUFCARD.COMM,"Конец программы", 15); /* построчного коментария */
+    memcpy(ASS_CARD._BUFCARD.COMM,"End of the programm", 19); /* построчного коментария */
           
 
     ZKARD();                                        /* запоминание псевдоопе- */
@@ -1521,7 +1557,7 @@ int OPA2()
 
                 ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
                                                                /*              и         */
-                memcpy(ASS_CARD._BUFCARD.COMM, "Формирование значения арифм.выражения", 37);      
+                memcpy(ASS_CARD._BUFCARD.COMM, "Formation of arithmetic expression", 34);      
                                                                /* построчный коментарий  */
                             
                 ZKARD();                                       /* запомнить операцию     */
@@ -1559,13 +1595,13 @@ int OPR2()
                                                   /* ПЛ1 - "начало процедур-*/
                                                   /* ного блока"            */
     while( FORMT[0][i] != '\x0' )
-        ASS_CARD._BUFCARD.METKA[i++] = FORMT[0][i];     /* нулевой терм используем*/
+        ASS_CARD._BUFCARD.METKA[i] = FORMT[0][i++];     /* нулевой терм используем*/
                                                         /* как метку в START-псев-*/
                                                         /* дооперации Ассемблера  */
 
     memcpy( ASS_CARD._BUFCARD.OPERAC, "START", 5 );     /* достраиваем код и опе- */
     memcpy( ASS_CARD._BUFCARD.OPERAND, "0", 1 );        /* ранды  в  START-псевдо-*/
-    memcpy( ASS_CARD._BUFCARD.COMM,"Начало программы", 16 ); /* операции Ассемблера    */
+    memcpy( ASS_CARD._BUFCARD.COMM,"Start of the programm", 21 ); /* операции Ассемблера    */
               
     ZKARD();                                            /* запоминаем карту Ассем-*/
                                                         /* блера                  */
@@ -1573,14 +1609,14 @@ int OPR2()
     memcpy( ASS_CARD._BUFCARD.OPERAC, "BALR", 4 );      /* формируем BALR-операцию*/
     memcpy( ASS_CARD._BUFCARD.OPERAND, "RBASE,0", 7 );  /* Ассемблера             */
                   
-    memcpy( ASS_CARD._BUFCARD.COMM,"Загрузить регистр базы", 22 );
+    memcpy( ASS_CARD._BUFCARD.COMM,"Load the register of the base", 29 );
           
     ZKARD();                                            /* и запоминаем ее        */
 
     memcpy( ASS_CARD._BUFCARD.OPERAC, "USING", 5 );     /* формируем USING-псевдо-*/
     memcpy( ASS_CARD._BUFCARD.OPERAND, "*,RBASE", 7 );  /* операцию Ассемблера    */
                   
-    memcpy( ASS_CARD._BUFCARD.COMM, "Назначить регистр базой", 23 );
+    memcpy( ASS_CARD._BUFCARD.COMM, "Set register as the base", 24 );
           
     ZKARD();                                            /* и запоминаем ее        */
 
@@ -1748,6 +1784,8 @@ int main(int argc, char **argv )
         }
         else                                      /*  пишем файл в массив   */
         {                                         /*  ISXTXT                */
+            printf("\nReading from file:\n");                                      //MY_PRINT
+
             for( NISXTXT = 0; NISXTXT <= MAXNISXTXT; NISXTXT++ )
             {
                 if( !fread(ISXTXT[NISXTXT], 80, 1, fp) )
@@ -1760,14 +1798,15 @@ int main(int argc, char **argv )
                         return;
                     }
                  }
-                 printf( "%d: %s#\n", NISXTXT, ISXTXT[NISXTXT] );  //MY_PRINT
+
+                 printf( "%d: %s", NISXTXT, ISXTXT[NISXTXT] );  //MY_PRINT
                  
-                 int i;
-                 for(i = 0; i < 80; i++)
-                 {
-                     printf( "%d:%c ", i, ISXTXT[NISXTXT][i] );  //MY_PRINT
-                 }
-                 printf( "\n");
+                 // int i;
+                 // for(i = 0; i < 80; i++)
+                 // {
+                 //     printf( "%d:%c ", i, ISXTXT[NISXTXT][i] );  //MY_PRINT
+                 // }
+                 // printf( "\n");
             }
             printf( "%s\n", "Переполнение буфера чтения исх.текста" );
             return;
@@ -1799,13 +1838,13 @@ int kkkk;
             "\"...",&STROKA[I4], "...\"");
         printf("%s\n", "трансляция прервана");
         
-        printf( "\n Error:%d \n", kkkk );  //MY_PRINT
+        printf( "\n Error:%d \n", kkkk );                                           //MY_PRINT
         
         return;                                 
     }
     else                                          /* иначе делаем           */
     {
-        switch( gen_COD() )                       /* семантическое вычислен.*/
+        switch( kkkk =  gen_COD() )                       /* семантическое вычислен.*/
         {
             case  0:                              /*если код завершения = 0,*/
                 printf( "%s\n", "трансляция завершена успешно" );
@@ -1820,23 +1859,25 @@ int kkkk;
                 STROKA[DST[I2].DST2 +20] = '\x0'; 
                 printf( "%s%s\n%s%s%s\n",
                     "недопустимый тип идентификатора: ",
-                    &FORMT[1], " в исх.тексте -> \"...",
+                    (char*)&FORMT[1], " в исх.тексте -> \"...",
                     &STROKA[DST[I2].DST2], "...\"" );
+                printf( "\n Error:%d \n", kkkk );                                           //MY_PRINT
                 break;
 
             case  3:                              /*если код завершения = 3,*/
                 STROKA[DST[I2].DST2 + 20] = '\x0';
                 printf( "%s%s\n%s%s%s\n",
                     "недопустимый тип идентификатора: ",
-                    &FORMT[IFORMT-1], " в исх.тексте -> \"...",
+                    (char*)&FORMT[IFORMT-1], " в исх.тексте -> \"...",
                     &STROKA[DST[I2].DST2], "...\"" );
+                printf( "\n Error:%d \n", kkkk );                                           //MY_PRINT
                 break;
 
             case  4:                              /*если код завершения = 4,*/
                 STROKA[DST[I2].DST2 + 20] = '\x0';
                 printf( "%s%s\n%s%s%s\n",
                     "неопределенный идентификатор: ",
-                    &FORMT[IFORMT-1], " в исх.тексте -> \"...",
+                    (char*)&FORMT[IFORMT-1], " в исх.тексте -> \"...",
                     &STROKA[DST[I2].DST2], "...\"" );
                 break;
 
@@ -1852,7 +1893,7 @@ int kkkk;
                 STROKA[DST[I2].DST2 + 20] = '\x0';
                 printf( "%s%s\n%s%s%s\n",
                     "повторное объявление идентификатора: ",
-                    &FORMT[1], " в исх.тексте -> \"...",
+                    (char*)&FORMT[1], " в исх.тексте -> \"...",
                     &STROKA[DST[I2].DST2], "...\"" );
                 break;
 

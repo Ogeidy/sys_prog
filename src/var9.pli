@@ -1,0 +1,5 @@
+EX09:   PROC  OPTIONS  ( MAIN );                                               
+DCL A   BIT  ( 5 )  INIT  ( 101B );                                            
+DCL B   DEC  FIXED;                                                            
+B = A;                                                                         
+END  EX09;                                                                     

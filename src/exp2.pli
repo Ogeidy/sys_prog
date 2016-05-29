@@ -1,7 +1,8 @@
-EXAMP: PROC OPTIONS (MAIN);                                                     
-DCL A BIN FIXED (31) INIT ( 11B );                                              
-DCL B BIN FIXED (31) INIT ( 100B );                                             
-DCL C BIN FIXED (31) INIT ( 101B );                                             
-DCL D BIN FIXED (31);                                                           
-D = A + B - C;                                                                  
-END EXAMP;                                                                      
+EXAMP: PROC OPTIONS (MAIN);                                                    
+DCL A BIN FIXED (31) INIT ( 11B );                                             
+DCL B BIN FIXED (31) INIT ( 100B );                                            
+DCL C BIN FIXED (31) INIT ( 101B );                                            
+DCL M BIN FIXED (31) INIT ( 111B );                                            
+DCL D BIN FIXED (31);                                                          
+D = A + B - C + M;                                                                 
+END EXAMP;                                                                     
