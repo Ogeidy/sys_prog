@@ -579,7 +579,7 @@ void compress_ISXTXT()                            /* Программа упло
 		for ( I2 = 0 ; I2 < 80 ; I2++ )
 			if ( ISXTXT [ I1 ][ I2 ] != '\x0' )
 			{
-				if ( ISXTXT [ I1 ][ I2 ] == ' ' &&
+				if ( (ISXTXT[I1][I2] == ' ' || ISXTXT[I1][I2] == '\n') &&
 					( PREDSYM == ' ' || PREDSYM == ';' ||
 					PREDSYM == ')' || PREDSYM == ':' ||
 					PREDSYM == '('
@@ -932,8 +932,7 @@ void ZKARD ()                                     /* записи очередн
 	/* ASSTXT                 */
 	char i;
 
-	memcpy ( ASSTXT [ IASSTXT ],
-		ASS_CARD.BUFCARD, 80 );
+	memcpy ( ASSTXT[ IASSTXT ], ASS_CARD.BUFCARD, 80 );
 	ASSTXT [ IASSTXT ][27] = '\0';
 	printf( "%s\n", ASSTXT [ IASSTXT  ] );
 

@@ -877,6 +877,7 @@ void ZKARD()                                      /* ASSTXT                 */
 {
     char i;
     memcpy(ASSTXT[IASSTXT++], ASS_CARD.BUFCARD, 80);
+    ASSTXT [ IASSTXT ][27] = '\0';
 
     for( i = 0; i < 79; i++ )
         ASS_CARD.BUFCARD[i] = ' ';
@@ -1593,24 +1594,29 @@ int OPR2()
                                                   /* ром проходе.   Здесь   */
                                                   /* PRO - "программа"      */
                                                   
-int PRO2()                                        /*прогр.формирует выходной*/
-{                                                 /*файл                    */
+int PRO2()                                    
+{                                                 
 
-    FILE *fp;                                     /*набор                   */
-                                                  /*рабочих                 */
-                                                  /*переменных              */
+    FILE *fp;                                   
 
-    strcat( NFIL , "ass" );                       /*сформировать имя выход- */
-                                                  /*ного файла              */
+    strcat( NFIL , "ass" );                       
 
-    if((fp = fopen( NFIL , "wb" )) == NULL )      /*при неудачн.открыт.ф-ла */
-        return(7);                                /* сообщение об ошибке    */
-
-    else                                          /*иначе:                  */
-        fwrite(ASSTXT, 80 , IASSTXT , fp);        /* формируем тело об.файла*/
+    if( (fp = fopen( NFIL , "wb" )) == NULL )      
+        return(7);                             
+    else   
+    {                                
+        //fwrite(ASSTXT, 80 , IASSTXT , fp); 
+        int i;
+		for( i = 0; i < IASSTXT; i++)
+		{
+			printf( "%s\n", ASSTXT[i] );
+			fprintf( fp, "%s\n", ASSTXT[i] );
+		}
+    }
         
-    fclose( fp );                                 /*закрываем об'ектный файл*/
-    return( 0 );                                  /*завершить полдпрограмму */
+    fclose(fp);                
+    
+    return(0);                                  /*завершить полдпрограмму */
 }
 
 /*..........................................................................*/
