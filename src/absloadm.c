@@ -25,18 +25,18 @@ char SPISOK  [NSPIS][80];                         /*масс.хранен.спи
 WINDOW *wblue, *wgreen, *wred, *wcyan, *wmargenta;
 
 struct STR_BUF_TXT                                /*структ.буфера карты TXT */
- {
-  unsigned char POLE1      ;                      /*место для кода 0x02     */
-  unsigned char POLE2  [ 3];                      /*поле типа об'ектн.карты */
-  unsigned char POLE3      ;                      /*пробел                  */
-  unsigned char ADOP   [ 3];                      /*относит.адрес опреации  */
-  unsigned char POLE5  [ 2];                      /*пробелы                 */
-  unsigned char DLNOP  [ 2];                      /*длина операции          */
-  unsigned char POLE7  [ 2];                      /*пробелы                 */
-  unsigned char POLE71 [ 2];                      /*внутренний идент.прогр. */
-  unsigned char OPER   [56];                      /*тело операции           */
-  unsigned char POLE9  [ 8];                      /*идентификационное поле  */
- };
+{
+    unsigned char POLE1      ;                      /*место для кода 0x02     */
+    unsigned char POLE2  [ 3];                      /*поле типа об'ектн.карты */
+    unsigned char POLE3      ;                      /*пробел                  */
+    unsigned char ADOP   [ 3];                      /*относит.адрес опреации  */
+    unsigned char POLE5  [ 2];                      /*пробелы                 */
+    unsigned char DLNOP  [ 2];                      /*длина операции          */
+    unsigned char POLE7  [ 2];                      /*пробелы                 */
+    unsigned char POLE71 [ 2];                      /*внутренний идент.прогр. */
+    unsigned char OPER   [56];                      /*тело операции           */
+    unsigned char POLE9  [ 8];                      /*идентификационное поле  */
+};
 
 
 union                                             /*определить об'единение  */
@@ -584,182 +584,177 @@ int InitCurses(void)
 //...........................................................................
 
 int main( int argc, char **argv )                /* п р о г р а м м а      */
-						  /*абсолютного загрузчика  */
-						  /*об'ектных файлов        */
+                        						  /*абсолютного загрузчика  */
+                        						  /*об'ектных файлов        */
 {
-  int  I,K,N,J0,res;                              /*рабочие                 */
-  unsigned long J;                                /*переменные              */
-  FILE *fp;                                       /*программы               */
-  char *ptr;
+    int  I,K,N,J0,res;                              /*рабочие                 */
+    unsigned long J;                                /*переменные              */
+    FILE *fp;                                       /*программы               */
+    char *ptr;
 
-//main programm
+    //main programm
 
 
-  if ( argc != 2 )
-  {
-    printf ( "%s\n", "Ошибка в командной строке" );
-    return -1;
-  }
- 
-  ptr = argv[1];
-  strcpy ( NFIL, ptr );
+    if ( argc != 2 )
+    {
+        printf ( "%s\n", "Ошибка в командной строке" );
+        return -1;
+    }
 
-  if ( strcmp ( &NFIL [ strlen ( NFIL )-3 ], "mod" ) )
-  {
-    goto ERR9;
-    return -1;
-  }
-  
-  if ((fp = fopen(NFIL,"rt")) == NULL)
-    goto ERR1;                                     /*сообщение об ошибке     */
-  else
-  {
-    while ( !feof( fp ) )                         /*читать все карты файла  */
-     {                                            /*со списком              */
-      fgets ( SPISOK [ISPIS++] , 80 , fp );       /*в массив SPISOK         */
-      if ( ISPIS == NSPIS )                       /*если этот массив пере-  */
-       {                                          /*полнен, то:             */
-	fclose ( fp );                            /*закрыть файл со списком */
-	goto ERR4;                                /*и выдать сообщение об ош*/
-       }
-     }
-    fclose ( fp );                                /*закрыть файл SPISOK     */
+    ptr = argv[1];
+    strcpy ( NFIL, ptr );
 
-    if ( ISPIS == 0 )                             /*если список пустойб     */
-						  /*то:                     */
-     goto ERR2;                                   /* сообщение об ошибке    */
-    else                                          /*иначе:                  */
-     goto CONT1;                                  /* продолжить обработку   */
-   }
+    if ( strcmp ( &NFIL [ strlen ( NFIL )-3 ], "mod" ) )
+    {
+        goto ERR9;
+        return -1;
+    }
+
+    if ((fp = fopen(NFIL,"rt")) == NULL)
+        goto ERR1;                                      /*сообщение об ошибке     */
+    else
+    {
+        while ( !feof( fp ) )                           /*читать все карты файла  */
+        {                                               /*со списком              */
+            fgets ( SPISOK [ISPIS++] , 80 , fp );       /*в массив SPISOK         */
+            if ( ISPIS == NSPIS )                       /*если этот массив пере-  */
+            {                                           /*полнен, то:             */
+                fclose ( fp );                          /*закрыть файл со списком */
+                goto ERR4;                              /*и выдать сообщение об ош*/
+            }
+        }
+
+        fclose ( fp );                                  /*закрыть файл SPISOK     */
+
+        if ( ISPIS == 0 )                               /*если список пустойб     */
+            goto ERR2;                                  /* сообщение об ошибке    */
+        else                                            /*иначе:                  */
+            goto CONT1;                                 /* продолжить обработку   */
+    }
 
 CONT1:
 
-  for ( I = 0; I < ISPIS; I++ )                   /*перебирая все собираемые*/
-   {      
-                                      /*об'ектные файлы,        */
-    if ((fp = fopen(SPISOK[I], "rb" )) ==  NULL)                                          
-      goto ERR3;                                   /*                        */
-    else                                          /* иначе:                 */
-     {                                          /*                        */
-      while ( !feof( fp) )                        /*  читать файл до конца, */
-       {                                          /*  размеcтить записи в   */   
-	fread ( OBJCARD [IOBJC++] , 80 , 1 , fp );/*  массиве OBJCARD и,если*/
-	if ( IOBJC == NOBJ )                      /*  считаны не все записи,*/
-	 {                                        /*  то:                   */
-	  fclose ( fp );                          /*   выдать сообщ.об ошиб.*/
-	  goto ERR5;                              /*                        */
-	 }                                                              
-       }                                          /*                        */
-      fclose ( fp );                              /*  закрыть очередной файл*/
-       
-      goto CONT2;                                 /*  и продолжить обработку*/
-     }
-   }
+    for ( I = 0; I < ISPIS; I++ )                       /*перебирая все собираемые*/
+    {                                                   /*об'ектные файлы,        */    
+        if ((fp = fopen(SPISOK[I], "rb" )) ==  NULL)                                          
+            goto ERR3;                                  /*                        */
+        else                                            /* иначе:                 */
+        {                                               /*                        */
+            while ( !feof( fp) )                        /*  читать файл до конца, */
+            {                                           /*  размеcтить записи в   */   
+                fread ( OBJCARD[IOBJC++], 80, 1, fp );  /*  массиве OBJCARD и,если*/
+                if ( IOBJC == NOBJ )                    /*  считаны не все записи,*/
+                {                                       /*  то:                   */
+                    fclose ( fp );                      /*   выдать сообщ.об ошиб.*/
+                    goto ERR5;                          /*                        */
+                }                                                              
+            }                                           /*                        */
+        fclose ( fp );                                  /*  закрыть очередной файл*/
+
+        goto CONT2;                                     /*  и продолжить обработку*/
+        }
+    }
        
 CONT2:
 
-  POINT.P_OBLZ = OBLZ;                            /*расчитать абсолютный    */
-  J = POINT.VAL_P.SEGM ;                          /*адрес области загрузки  */
-  J = J << 4;                                     /*OBLZ в переменной J     */
-  J += POINT.VAL_P.SMESH;
+    POINT.P_OBLZ = OBLZ;                            /*расчитать абсолютный    */
+    J = POINT.VAL_P.SEGM ;                          /*адрес области загрузки  */
+    J = J << 4;                                     /*OBLZ в переменной J     */
+    J += POINT.VAL_P.SMESH;
 
-  if ( ( J0 = (int) J%8 ) == 0 )                  /*выровнять полученное    */
-   {
-    BAS_ADDR = J;                                 /*значение на границу     */
-    BAS_IND  = 0;
-   }
-  else                                            /*двойного слова и запомн.*/
-   {
-    BAS_ADDR = ( ( J >> 3 ) + 1 ) << 3;           /*его в перем.BAS_ADDR,а  */
-    BAS_IND = 8 - J0;                             /*соотв.индекс масс.OBLZ-в*/
-   }						  /*перем.BAS_IND           */
-
-  for ( I = 0; I < IOBJC; I++ )                   /*перебирая все считанные */
-   {                                              /*карты об'ектных файлов, */
-    if ( !memcmp ( &OBJCARD [I][1] , "TXT" , 3 ) )/*отобрать принадл.к типу */
-     {                                            /*TXT и расчитать:        */
-      memcpy ( TXT.BUF_TXT , OBJCARD [I] , 80 );  /*                        */
-      J = TXT.STR_TXT.ADOP [0];                   /* в переменной J начальн.*/
-      J = (J << 8) + TXT.STR_TXT.ADOP [1];        /*  индекс загрузки в мас-*/
-      J = (J << 8) + TXT.STR_TXT.ADOP [2];        /*  сиве OBLZ             */
-      J += BAS_IND;                               /*и                       */
-						  /*                        */
-      K = TXT.STR_TXT.DLNOP [0];                  /* в переменной K длину   */
-      K = (K << 8) + TXT.STR_TXT.DLNOP [1];       /* загружаемых данных     */
-
-      for ( N=0; N < K; N++ )                     /*загрузить данные с очер.*/
-       OBLZ [ (int) J++ ] = TXT.STR_TXT.OPER [N]; /*об'ектной карты         */
-     }
-   }
-   
-
-
-
-  InitCurses();
-
-  res = sys(); 
-  
-  switch (res)
-  {
-    case 6: 
+    if ( ( J0 = (int) J%8 ) == 0 )                  /*выровнять полученное    */
     {
-      endwin();
-      goto ERR6;
+        BAS_ADDR = J;                                 /*значение на границу     */
+        BAS_IND  = 0;
     }
-    case 7:
+    else                                            /*двойного слова и запомн.*/
     {
-      endwin();
-      goto ERR7;
-    }
-    case 8:
-    {
-      endwin();
-      goto ERR8;
-    }
-  }
-  
-  endwin(); 
-  END:
-  printf ("\n%s\n", "завершение обработки");
+        BAS_ADDR = ( ( J >> 3 ) + 1 ) << 3;           /*его в перем.BAS_ADDR,а  */
+        BAS_IND = 8 - J0;                             /*соотв.индекс масс.OBLZ-в*/
+    }						                     /*перем.BAS_IND           */
 
-  return 0;
-//Б Л О К  выдачи диагностических сообщений
+    for ( I = 0; I < IOBJC; I++ )                   /*перебирая все считанные */
+    {                                              /*карты об'ектных файлов, */
+        if ( !memcmp ( &OBJCARD [I][1] , "TXT" , 3 ) )/*отобрать принадл.к типу */
+        {                                            /*TXT и расчитать:        */
+            memcpy ( TXT.BUF_TXT , OBJCARD [I] , 80 );  /*                        */
+            J = TXT.STR_TXT.ADOP [0];                   /* в переменной J начальн.*/
+            J = (J << 8) + TXT.STR_TXT.ADOP [1];        /*  индекс загрузки в мас-*/
+            J = (J << 8) + TXT.STR_TXT.ADOP [2];        /*  сиве OBLZ             */
+            J += BAS_IND;                               /*и                       */
+            				  /*                        */
+            K = TXT.STR_TXT.DLNOP [0];                  /* в переменной K длину   */
+            K = (K << 8) + TXT.STR_TXT.DLNOP [1];       /* загружаемых данных     */
+
+            for ( N=0; N < K; N++ )                     /*загрузить данные с очер.*/
+                OBLZ [ (int) J++ ] = TXT.STR_TXT.OPER [N]; /*об'ектной карты         */
+        }
+    }
+
+
+    InitCurses();
+
+    res = sys(); 
+
+    switch (res)
+    {
+        case 6: 
+        {
+            endwin();
+            goto ERR6;
+        }
+        case 7:
+        {
+            endwin();
+            goto ERR7;
+        }
+        case 8:
+        {
+            endwin();
+            goto ERR8;
+        }
+    }
+
+    endwin(); 
+
+END:
+    printf ("\n%s\n", "завершение обработки");
+
+    return 0;
+
+    //Б Л О К  выдачи диагностических сообщений
 ERR1:
-  printf ("%s%s\n", "ошибка открытия файла со списком собираемых ", "модулей");
-  goto END;
+    printf ("%s%s\n", "ошибка открытия файла со списком собираемых ", "модулей");
+    goto END;
 
 ERR2:
-  printf ("%s\n", "пустой файл со списком собираемых модулей");
-  goto END;
+    printf ("%s\n", "пустой файл со списком собираемых модулей");
+    goto END;
 
 ERR3:
-  printf ("%s: %s\n" ,
-   "ошибка открытия файла" , SPISOK [I] );
-  goto END;
+    printf ("%s: %s\n", "ошибка открытия файла" , SPISOK [I] );
+    goto END;
 
 ERR4:
-  printf ("%s\n" ,
-   "переполнение списка собираемых модулей" );
-  goto END;
+    printf ("%s\n", "переполнение списка собираемых модулей" );
+    goto END;
 
 ERR5:
-  printf ("%s\n" ,
-   "переполнение буфера хранения об'ектных карт");
-  goto END;
+    printf ("%s\n", "переполнение буфера хранения об'ектных карт");
+    goto END;
 
 ERR6:
-  printf ("%s\n" ,
-   "недопустимый код команды" );
-  goto END;
-  
+    printf ("%s\n", "недопустимый код команды" );
+    goto END;
+
 ERR7:
-  printf("прерывание - ошибка адресации\n");
-  goto END;
-  
+    printf("прерывание - ошибка адресации\n");
+    goto END;
+
 ERR8:
-  goto END;
+    goto END;
 
 ERR9:
-  printf ( "%s\n", "Неверный тип файла с исходным текстом" );
-  goto END;
+    printf ( "%s\n", "Неверный тип файла с исходным текстом" );
+    goto END;
 }
