@@ -1,17 +1,16 @@
-X09
-         BALR  RBASE,0     
-         USING *,RBASE     
-         L     RRAB,NULL   
-         IC    RRAB,A      
-         SRL   RRAB,5      
-         CVD   RRAB,TEMPDEC
-         ZAP   B,TEMPDEC   
-         BCR   15,14       
-A        DC    BL5'101'
-B        DC    PL3'0'      
-         DS    0F          
-TEMPDEC  DC    PL8'0'      
-NULL     DC    F'0'
-RBASE    EQU   15          
-RRAB     EQU   5           
-         END   EX09        
+EX09     START 0            Start of the programm                              
+         BALR  RBASE,0      Load the register of the base                      
+         USING *,RBASE      Set register as the base                           
+         LH    RRAB,A       Load the variable to the register                  
+         SRL   RRAB,13      Arithmetic shift                                   
+         CVD   RRAB,BUF     Change type                                        
+         LA    RADD,BUF     Load addres to register                            
+         MVC   A(3),5(RADD) Moving to needed variable                          
+         BCR   15,14        Exit from the programm                             
+A        DC    BL.16'101'   Definition of variable                             
+B        DC    PL3'0'       Definition of variable                             
+         DS    0F           Aligment                                           
+BUF      DC    PL8'0'       Definition of variable                             
+RBASE    EQU   15                                                              
+RRAB     EQU   5                                                               
+         END   EX09         End of the programm                                

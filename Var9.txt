@@ -70,7 +70,7 @@ EX09    START   0
         BCR     15, 14     
 
 A       DC      BL.16'101'      
-B       DS      PL3             
+B       DC      PL3'0'             
         DS      0F            
 BUF     DC      PL8'0'        
 RBASE   EQU     15              

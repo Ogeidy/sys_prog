@@ -616,18 +616,7 @@ L2:             continue;
     
     STROKA[I3] = '\x0';
 
-    printf( "\nSTROKA: %s\n", STROKA );        //MY_PRINT
-
-    // int i;
-    // for(i = 0; i <= I3; i++)
-    // {
-    //     printf("%d:%c ",i, STROKA[i]);
-    // }
-    // printf( "\n");
-    // for(i = 0; i <= I3; i++)
-    // {
-    //     printf("%d:%d ",i, STROKA[i]);
-    // }
+    //printf( "\nSTROKA: %s\n\n", STROKA );        //MY_PRINT
 }
 
 /*..........................................................................*/
@@ -886,8 +875,7 @@ FORM1:
         {
             FORMT[IFORMT][i-j] = '\x0';
 
-            printf("IFORMT:%d,FORMT:%s \n", IFORMT,(char*)FORMT[IFORMT]);    //MY_PRINT
-
+            //printf("IFORMT:%d,FORMT:%s \n", IFORMT,(char*)FORMT[IFORMT]);    //MY_PRINT
 
             IFORMT ++;
             j = i+1;
@@ -910,8 +898,6 @@ void ZKARD()                                      /* ASSTXT                 */
     char i;
     memcpy(ASSTXT[IASSTXT], ASS_CARD.BUFCARD, 80);
     ASSTXT[IASSTXT][79] = '\0';
-
-    printf( "aa: %s\n", ASSTXT[IASSTXT] );
 
     IASSTXT++;
 
@@ -1048,6 +1034,7 @@ int ODC1()
         SYM[ISYM].TYPE = 'L';   
         
         strcpy( SYM[ISYM].RAZR, FORMT[3] );   
+        //strcpy( SYM[ISYM].RAZR, "16" );   
 
         if( !strcmp(FORMT[4], "INIT") )          
             strcpy(SYM[ISYM].INIT, FORMT[5]);                                       
@@ -1059,7 +1046,8 @@ int ODC1()
         SYM[ISYM].TYPE = 'D';   
         
         strcpy( SYM[ISYM].RAZR, FORMT[3] );   
-        SYM[ISYM].RAZR[0] = '3';                 /*Устанавливаем разрядность 3 */                             
+        SYM[ISYM].RAZR[0] = '3';                 /*Устанавливаем разрядность 3 */  
+        SYM[ISYM].RAZR[1] = '\0';                             
         strcpy(SYM[ISYM].INIT, "0B");  
     }                                                                                                     
     else                                          /* иначе                  */
@@ -1462,10 +1450,10 @@ int OEN2()
                                                   /* попавшего в табл.SYM   */
     for( i = 0; i < ISYM; i++ )
     {                                             /* если строка табл.SYM   */
-        if( isalpha(SYM[i].NAME[0]) )            /* содержит идентификатор,*/
+        if( isalpha(SYM[i].NAME[0]) )             /* содержит идентификатор,*/
                                                   /* т.е.начинается с буквы,*/
         {                                         /* то:                    */
-            if( SYM[i].TYPE == 'B' )             /* если тип оператора bin */
+            if( SYM[i].TYPE == 'B' )              /* если тип оператора bin */
                                                   /* fixed, то:             */
             {
                 strcpy( ASS_CARD._BUFCARD.METKA,SYM[i].NAME );         
@@ -1507,6 +1495,51 @@ int OEN2()
                 ZKARD();                          /* запомнить операцию     */
                                                   /*    Ассемблера          */
             }
+            else if( SYM[i].TYPE == 'L' )         /* в случае типа=bit      */
+            {
+                strcpy( ASS_CARD._BUFCARD.METKA,SYM[i].NAME );
+                                                  /* пишем разделитель полей*/
+                ASS_CARD._BUFCARD.METKA[strlen(ASS_CARD._BUFCARD.METKA)] = ' ';
+                memcpy( ASS_CARD._BUFCARD.OPERAC, "DC", 2 ); 
+                strcpy( ASS_CARD._BUFCARD.OPERAND,"BL." );  
+                strcat( ASS_CARD._BUFCARD.OPERAND, "16" );
+                strcat( ASS_CARD._BUFCARD.OPERAND, "\'" );
+                SYM[i].INIT[strlen(SYM[i].INIT) - 1] = '\0';
+                strcat( ASS_CARD._BUFCARD.OPERAND, SYM[i].INIT );
+                ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = '\'';        
+                                                  /* замыкающий апостроф    */
+                                                  /*          и             */
+                memcpy(ASS_CARD._BUFCARD.COMM,"Definition of variable", 22);          
+                                                  /* поле построчного комен-*/
+                                                  /* тария                  */
+
+                ZKARD();   
+
+            }
+            else if( SYM[i].TYPE == 'D' )         /* в случае типа=dec fixed*/
+            {
+                if (!strcmp(SYM [i].NAME, "BUF")) /* Добавляем выравнивание */
+                {
+                    memcpy ( ASS_CARD._BUFCARD.OPERAC, "DS", 2 );
+                    memcpy ( ASS_CARD._BUFCARD.OPERAND, "0F", 2 );     /* Выравнивание 4 байта */                
+                    memcpy ( ASS_CARD._BUFCARD.COMM, "Aligment", 8 );
+                    ZKARD ();     
+                }
+
+                strcpy( ASS_CARD._BUFCARD.METKA,SYM[i].NAME );
+                                                  /* пишем разделитель полей*/
+                ASS_CARD._BUFCARD.METKA[strlen(ASS_CARD._BUFCARD.METKA)] = ' ';
+                memcpy( ASS_CARD._BUFCARD.OPERAC, "DC", 2 ); 
+                strcpy( ASS_CARD._BUFCARD.OPERAND,"PL" ); 
+                strcat( ASS_CARD._BUFCARD.OPERAND, SYM[i].RAZR );
+                strcat( ASS_CARD._BUFCARD.OPERAND, "\'" );
+                SYM[i].INIT[strlen(SYM[i].INIT) - 1] = '\0';
+                strcat( ASS_CARD._BUFCARD.OPERAND, SYM[i].INIT ); 
+                ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = '\'';        
+                memcpy(ASS_CARD._BUFCARD.COMM,"Definition of variable", 22);          
+
+                ZKARD(); 
+            }
         }
     }
                                                   /* далее идет блок декла- */
@@ -1545,6 +1578,17 @@ int OEN2()
                                                     /* рации                  */
 
     return 0;                                       /* завершение программы   */
+}
+
+/*..........................................................................*/
+//Функция создания вспомогательной 8 байтовой переменной для CVD
+void AddTemp8BytesVariable( char* name )
+{
+    strcpy ( SYM [ISYM].NAME, name );   //Пишем имя, например TEMPDEC          
+    strcpy ( SYM [ISYM].RAZR, "8" );    //Разрядность 8 байт
+    strcpy ( SYM [ISYM].INIT, "0B" );    //Значение 0
+    SYM [ISYM].TYPE = 'D';              //Тип DEC
+    ISYM++;                             //Увеличиваем количество символов на 1
 }
 
 /*..........................................................................*/
@@ -1597,20 +1641,7 @@ int OPA2()
             else if( SYM[i].TYPE == 'L' )                           /* в случае типа=bit      */
             {
                 //Not implemented
-                return 3; 
-
-                memcpy(ASS_CARD._BUFCARD.OPERAC, "LH", 2);
-                strcpy( ASS_CARD._BUFCARD.OPERAND, "RRAB," );                                            
-                strcat( ASS_CARD._BUFCARD.OPERAND, FORMT[0]); 
-                                                                    /* вставляем разделитель  */
-                ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
-             
-                                                                    /* и построчный коментарий*/
-                memcpy( ASS_CARD._BUFCARD.COMM, "Load the variable to the register", 33 );   
-                
-                ZKARD();
-
-                return 0;
+                return 3;       
             }
             else if( SYM[i].TYPE == 'D' )                           /* в случае типа=dec fixed*/
             {
@@ -1621,16 +1652,56 @@ int OPA2()
                     {
                         if( SYM[j].TYPE == 'L' )              /* если этот идентификатор*/
                         {
-                            memcpy(ASS_CARD._BUFCARD.OPERAC, "LA", 2);
-                            strcpy( ASS_CARD._BUFCARD.OPERAND, "RWRK," );                                            
-                            strcat( ASS_CARD._BUFCARD.OPERAND, FORMT[0]); 
+
+                            /*    Arithmetic shift    */
+                            memcpy(ASS_CARD._BUFCARD.OPERAC, "SRL", 3);
+                            strcpy( ASS_CARD._BUFCARD.OPERAND, "RRAB," );   
+                            int int_offset = 16 - strlen(SYM[j].INIT) + 1;       //Вычисляем смещение
+                            char ch_offset[2];
+                            sprintf(ch_offset, "%d", int_offset);          
+                            strcat( ASS_CARD._BUFCARD.OPERAND, ch_offset); 
                                                                                 /* вставляем разделитель  */
                             ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
-                         
                                                                                 /* и построчный коментарий*/
-                            memcpy( ASS_CARD._BUFCARD.COMM, "Load the variable to the register", 33 );   
+                            memcpy( ASS_CARD._BUFCARD.COMM, "Arithmetic shift", 16 );   
                             
                             ZKARD();
+
+                            /*    Change type    */
+                            memcpy(ASS_CARD._BUFCARD.OPERAC, "CVD", 3);
+                            strcpy( ASS_CARD._BUFCARD.OPERAND, "RRAB," );           
+                            strcat( ASS_CARD._BUFCARD.OPERAND, "BUF"); 
+                                                                                /* вставляем разделитель  */
+                            ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
+                                                                                /* и построчный коментарий*/
+                            memcpy( ASS_CARD._BUFCARD.COMM, "Change type", 11 );   
+                            
+                            ZKARD();
+
+                            /*    Load addres to register    */
+                            AddTemp8BytesVariable("BUF");
+                            memcpy(ASS_CARD._BUFCARD.OPERAC, "LA", 2);
+                            strcpy( ASS_CARD._BUFCARD.OPERAND, "RADD," );           
+                            strcat( ASS_CARD._BUFCARD.OPERAND, "BUF"); 
+                                                                                /* вставляем разделитель  */
+                            ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
+                                                                                /* и построчный коментарий*/
+                            memcpy( ASS_CARD._BUFCARD.COMM, "Load addres to register", 23 );   
+                            
+                            ZKARD();
+
+                            /*    Moving to needed variable    */
+                            memcpy(ASS_CARD._BUFCARD.OPERAC, "MVC", 3);
+                            strcpy( ASS_CARD._BUFCARD.OPERAND, FORMT[1] );           
+                            strcat( ASS_CARD._BUFCARD.OPERAND, "(3),5(RADD)"); 
+                                                                                /* вставляем разделитель  */
+                            ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
+                                                                                /* и построчный коментарий*/
+                            memcpy( ASS_CARD._BUFCARD.COMM, "Moving to needed variable", 25 );   
+                            
+                            ZKARD();
+
+                            return 0;
                         }
                         //other not implemented
                         return 3;
@@ -1713,8 +1784,8 @@ int PRO2()
     if( (fp = fopen( NFIL , "wb" )) == NULL )      
         return(7);                             
     else   
-    {                                
-        //fwrite(ASSTXT, 80 , IASSTXT , fp); 
+    {         
+        printf( "\nAssembler code:\n" );                       
         int i;
 		for( i = 0; i < IASSTXT; i++)
 		{
@@ -1873,13 +1944,7 @@ int main(int argc, char **argv )
                  }
 
                  printf( "%d: %s", NISXTXT, ISXTXT[NISXTXT] );  //MY_PRINT
-                 
-                 // int i;
-                 // for(i = 0; i < 80; i++)
-                 // {
-                 //     printf( "%d:%c ", i, ISXTXT[NISXTXT][i] );  //MY_PRINT
-                 // }
-                 // printf( "\n");
+
             }
             printf( "%s\n", "Переполнение буфера чтения исх.текста" );
             return;
@@ -1902,8 +1967,8 @@ main1:                                            /* по завершении �
     build_TPR();                                  /* построение матрицы     */
                                                   /* преемников             */
 
-int kkkk;
-    if( kkkk = sint_ANAL() )                             /* синтаксический анализ  */
+int err;
+    if( err = sint_ANAL() )                             /* синтаксический анализ  */
     {                                             /* исходного текста       */
         STROKA[I4 +20] = '\x0';
         printf("%s%s%s%s\n",
@@ -1911,13 +1976,13 @@ int kkkk;
             "\"...",&STROKA[I4], "...\"");
         printf("%s\n", "трансляция прервана");
         
-        printf( "\n Error:%d \n", kkkk );                                           //MY_PRINT
+        printf( "\n Error:%d \n", err );                                           //MY_PRINT
         
         return;                                 
     }
     else                                          /* иначе делаем           */
     {
-        switch( kkkk =  gen_COD() )                       /* семантическое вычислен.*/
+        switch( err =  gen_COD() )                       /* семантическое вычислен.*/
         {
             case  0:                              /*если код завершения = 0,*/
                 printf( "%s\n", "трансляция завершена успешно" );
@@ -1934,7 +1999,7 @@ int kkkk;
                     "недопустимый тип идентификатора: ",
                     (char*)&FORMT[1], " в исх.тексте -> \"...",
                     &STROKA[DST[I2].DST2], "...\"" );
-                printf( "\n Error:%d \n", kkkk );                                           //MY_PRINT
+                printf( "\n Error:%d \n", err );                                           //MY_PRINT
                 break;
 
             case  3:                              /*если код завершения = 3,*/
@@ -1943,7 +2008,7 @@ int kkkk;
                     "недопустимый тип идентификатора: ",
                     (char*)&FORMT[IFORMT-1], " в исх.тексте -> \"...",
                     &STROKA[DST[I2].DST2], "...\"" );
-                printf( "\n Error:%d \n", kkkk );                                           //MY_PRINT
+                printf( "\n Error:%d \n", err );                                           //MY_PRINT
                 break;
 
             case  4:                              /*если код завершения = 4,*/
@@ -1952,7 +2017,7 @@ int kkkk;
                     "неопределенный идентификатор: ",
                     (char*)&FORMT[IFORMT-1], " в исх.тексте -> \"...",
                     &STROKA[DST[I2].DST2], "...\"" );
-                printf( "\n Error:%d \n", kkkk );                                           //MY_PRINT
+                printf( "\n Error:%d \n", err );                                           //MY_PRINT
                 break;
 
             case  5:                              /*если код завершения = 5,*/
