@@ -303,6 +303,21 @@ struct STR_BUF_END                                /*структ.буфера к
    } END;
 
 
+struct OPSS                                     /*структ.буф.опер.форм.SS */
+   {
+    unsigned char OP;                             /*код операции            */
+    unsigned char L1L2;                           /*L1 и L2                 */
+    short B1D1;                                   /*B1 и D1                 */
+    short B2D2; 
+    int LEN;                                  /*B2 и D2                 */
+   };
+
+  union                                           /*определить об'единение  */
+   {
+    unsigned char BUF_OP_SS [6];                  /*оределить буфер         */
+    struct OPSS OP_SS;                            /*структурировать его     */
+   } SS;
+
 /*
 ******* Б Л О К  об'явлений подпрограмм, используемых при 1-ом просмотре
 */
@@ -513,10 +528,15 @@ void STXT( int ARG )                              /*подпр.формир.TXT-
     memcpy ( TXT.STR_TXT.OPER,RR.BUF_OP_RR , 2 ); /* для RR-формата         */
     TXT.STR_TXT.DLNOP [1] = 2;
    }
-  else
+  else if (ARG == 4)
    {
     memcpy ( TXT.STR_TXT.OPER , RX.BUF_OP_RX , 4);/* для RX-формата         */
     TXT.STR_TXT.DLNOP [1] = 4;
+   }
+   else if (ARG == 6)
+   {
+    memcpy ( TXT.STR_TXT.OPER , RX.BUF_OP_RX , 6);/* для RX-формата         */
+    TXT.STR_TXT.DLNOP [1] = 6;
    }
   memcpy (TXT.STR_TXT.POLE9,ESD.STR_ESD.POLE11,8);/*формиров.идентифик.поля */
 
@@ -942,7 +962,8 @@ int SRX()                                         /*подпр.обр.опер.R
 				ZNSYM  = T_SYM[J].ZNSYM;
 				DLSYM =  T_SYM[J].DLSYM;   /*   смещен.втор.операнда */
 				R1X2 = T_SYM[J].ZNSYM << 4;              /*  метки в качестве перв.*/
-				//Our awesome input
+				
+				// New code
 				DELTA  = atoi(METKA2);                       /*   и его значен.,а также*/
 				B2D2 = NBASRG << 12;                    /* представление второго  */
 				B2D2 = B2D2 + DELTA;                    /* операнда в виде B2D2   */ 
@@ -963,7 +984,109 @@ int SRX()                                         /*подпр.обр.опер.R
 }
 
 int SSS() {
-	return(0);
+
+  unsigned i, j;
+    unsigned rbase, delta, offset;
+    char *op1, *len1, *op2, *op3;
+    char *tmp;
+
+    op1 = strtok((char *) TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, "(");
+    // printf("get op1 %s\n", op1);
+    len1 = strtok(NULL, ")");
+    // printf("get len1 %s\n", len1);
+    char * t = strtok(NULL, ",");
+    op2 = strtok(t, "(");
+    // printf("get op2 %s\n", op2);
+    op3 = strtok(NULL, ")");
+    // printf("get len2 %s\n", len2);
+
+    SS.OP_SS.LEN = atoi(len1) - 1;
+
+    SS.OP_SS.OP  = T_MOP[I3].CODOP;
+
+    if (isalpha((int) *op1))
+    {
+        for (i = 0; i <= ITSYM; i++)
+        {
+            tmp = strtok((char *) T_SYM[i].IMSYM, " ");
+            if (!strcmp(tmp, op1))
+            {
+                rbase = 0;
+                delta = 0xfff - 1;
+                offset = T_SYM[i].ZNSYM;
+                for (j = 0; j < 15; j++)
+                {
+                    if (T_BASR[j].PRDOST == 'Y' &&
+                        offset - T_BASR[j].SMESH >= 0 &&
+                        offset - T_BASR[j].SMESH < delta)
+                    {
+                        rbase = j + 1;
+                        delta = offset - T_BASR[j].SMESH;
+                    }
+                }
+                if (rbase == 0 || delta > 0xfff)
+                    return 5;
+                else
+                {
+                    SS.OP_SS.B1D1 = rbase << 12;
+                    SS.OP_SS.B1D1 = SS.OP_SS.B1D1 + delta;
+                    tmp = (char *) &SS.OP_SS.B1D1;
+                    swab(tmp, tmp, 2);
+                    goto CNT1;
+                }
+            }
+        }
+        printf("FAIL 1\n");
+        return 2;
+    }
+    else
+        printf("FAIL 2\n");
+        return 2;
+
+CNT1:
+    if (isalpha((int) *op3))
+    {
+        for (i = 0; i <= ITSYM; i++)
+        {
+            tmp = strtok((char *) T_SYM[i].IMSYM, " ");
+            if (!strcmp(tmp, op3))
+            {
+                rbase = 0;
+                delta = 0xfff - 1;
+                offset = T_SYM[i].ZNSYM;
+                for (j = 0; j < 15; j++)
+                {
+                    if (T_BASR[j].PRDOST == 'Y' &&
+                        offset - T_BASR[j].SMESH >= 0 &&
+                        offset - T_BASR[j].SMESH < delta)
+                    {
+                        rbase = j + 1;
+                        delta = offset - T_BASR[j].SMESH;
+                    }
+                }
+                if (rbase == 0 || delta > 0xfff)
+                    return 5;
+                else
+                {
+                    SS.OP_SS.B2D2 = rbase << 12;
+                    SS.OP_SS.B2D2 = SS.OP_SS.B2D2 + delta;
+                    tmp = (char *) &SS.OP_SS.B2D2;
+                    swab(tmp, tmp, 2);
+                    goto CNT2;
+                }
+            }
+        }
+        printf("FAIL 3\n");
+        return 2;
+    }
+    else
+        printf("FAIL 4\n");
+        return 2;
+
+CNT2:
+    STXT(6);
+    
+    return 0;
 }
 
 /*..........................................................................*/
