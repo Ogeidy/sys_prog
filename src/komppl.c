@@ -1501,7 +1501,7 @@ int OEN2()
                                                   /* пишем разделитель полей*/
                 ASS_CARD._BUFCARD.METKA[strlen(ASS_CARD._BUFCARD.METKA)] = ' ';
                 memcpy( ASS_CARD._BUFCARD.OPERAC, "DC", 2 ); 
-                strcpy( ASS_CARD._BUFCARD.OPERAND,"BL." );  
+                strcpy( ASS_CARD._BUFCARD.OPERAND,"BL" );  
                 strcat( ASS_CARD._BUFCARD.OPERAND, "16" );
                 strcat( ASS_CARD._BUFCARD.OPERAND, "\'" );
                 SYM[i].INIT[strlen(SYM[i].INIT) - 1] = '\0';
