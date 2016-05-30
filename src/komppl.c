@@ -1695,7 +1695,7 @@ int OPA2()
 
                             /*    Moving to needed variable    */
                             memcpy(ASS_CARD._BUFCARD.OPERAC, "MVC", 3);
-                            strcpy( ASS_CARD._BUFCARD.OPERAND, FORMT[1] );           
+                            strcpy( ASS_CARD._BUFCARD.OPERAND, FORMT[0] );           
                             strcat( ASS_CARD._BUFCARD.OPERAND, "(3),5(RADD)"); 
                                                                                 /* вставляем разделитель  */
                             ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
