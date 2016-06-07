@@ -1201,7 +1201,7 @@ int AVI2()
                                                                         /* формируем код ассембле-*/
                                                                         /* ровской операции L     */
 
-                        strcpy( ASS_CARD._BUFCARD.OPERAND, "RRAB," );   /*  формируем первый  и   */
+                        strcpy( ASS_CARD._BUFCARD.OPERAND, "@RRAB," );   /*  формируем первый  и   */
                                                                         /* второй операнды ассемб-*/
                         strcat( ASS_CARD._BUFCARD.OPERAND, FORMT[0]);   /* леровской операции     */
                                                                         
@@ -1218,7 +1218,7 @@ int AVI2()
                 else if( SYM[i].TYPE == 'L' )                           /* в случае типа=bit      */
                 {
                     memcpy(ASS_CARD._BUFCARD.OPERAC, "LH", 2);
-                    strcpy( ASS_CARD._BUFCARD.OPERAND, "RRAB," );                                            
+                    strcpy( ASS_CARD._BUFCARD.OPERAND, "@RRAB," );                                            
                     strcat( ASS_CARD._BUFCARD.OPERAND, FORMT[0]); 
                                                                         /* вставляем разделитель  */
                     ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
@@ -1285,7 +1285,7 @@ int AVI2()
                                                                         /* шение программы  по ош.*/
                     }
                                                                         /* формируем:             */
-                    strcpy(ASS_CARD._BUFCARD.OPERAND, "RRAB,");         /* - первый операнд ассем-*/
+                    strcpy(ASS_CARD._BUFCARD.OPERAND, "@RRAB,");         /* - первый операнд ассем-*/
                                                                         /*блеровской операции;    */
                     strcat(ASS_CARD._BUFCARD.OPERAND, FORMT[IFORMT-1]); /* - второй операнд ассем-*/
                                                                         /*блеровской операции;    */
@@ -1446,7 +1446,7 @@ int OEN2()
                                                   /* попавшего в табл.SYM   */
     for( i = 0; i < ISYM; i++ )
     {                                             /* если строка табл.SYM   */
-        if( isalpha(SYM[i].NAME[0]) )             /* содержит идентификатор,*/
+        if( isalpha(SYM[i].NAME[0]) || SYM[i].NAME[0] == '@')             /* содержит идентификатор,*/
                                                   /* т.е.начинается с буквы,*/
         {                                         /* то:                    */
             if( SYM[i].TYPE == 'B' )              /* если тип оператора bin */
@@ -1514,7 +1514,7 @@ int OEN2()
             }
             else if( SYM[i].TYPE == 'D' )         /* в случае типа=dec fixed*/
             {
-                if (!strcmp(SYM [i].NAME, "BUF")) /* Добавляем выравнивание */
+                if (!strcmp(SYM [i].NAME, "@BUF")) /* Добавляем выравнивание */
                 {
                     memcpy ( ASS_CARD._BUFCARD.OPERAC, "DS", 2 );
                     memcpy ( ASS_CARD._BUFCARD.OPERAND, "0F", 2 );     /* Выравнивание 4 байта */                
@@ -1545,21 +1545,21 @@ int OEN2()
                                                   /* рабочий регистры общего*/
                                                   /* назначения             */
 
-    memcpy( ASS_CARD._BUFCARD.METKA, "RBASE", 5 );  /* формирование EQU-псев- */
+    memcpy( ASS_CARD._BUFCARD.METKA, "@RBASE", 6 );  /* формирование EQU-псев- */
     memcpy( ASS_CARD._BUFCARD.OPERAC, "EQU",3 );    /* дооперации определения */
     memcpy( ASS_CARD._BUFCARD.OPERAND, "15", 2 );   /* номера базового регист-*/
                                                     /* ра общего назначения   */
                                                     /*           и            */
     ZKARD();                                        /* запоминание ее         */
 
-    memcpy( ASS_CARD._BUFCARD.METKA, "RRAB", 4 );   /* формирование EQU-псев- */
+    memcpy( ASS_CARD._BUFCARD.METKA, "@RRAB", 5 );   /* формирование EQU-псев- */
     memcpy( ASS_CARD._BUFCARD.OPERAC, "EQU", 3 );   /* дооперации определения */
     memcpy( ASS_CARD._BUFCARD.OPERAND, "5",  1 );    /* номера базового регист-*/
                                                     /* ра общего назначения   */
                                                     /*            и           */
     ZKARD();                                        /* запоминание ее         */
 
-    memcpy( ASS_CARD._BUFCARD.METKA, "RADD", 4 );   /* формирование EQU-псев- */
+    memcpy( ASS_CARD._BUFCARD.METKA, "@RADD", 5 );   /* формирование EQU-псев- */
     memcpy( ASS_CARD._BUFCARD.OPERAC, "EQU", 3 );   /* дооперации определения */
     memcpy( ASS_CARD._BUFCARD.OPERAND, "4",  1 );    /* номера базового регист-*/
                                                     /* ра общего назначения   */
@@ -1587,7 +1587,7 @@ int OEN2()
 //Функция создания вспомогательной 8 байтовой переменной для CVD
 void AddTemp8BytesVariable( char* name )
 {
-    strcpy ( SYM [ISYM].NAME, name );   //Пишем имя, например TEMPDEC          
+    strcpy ( SYM [ISYM].NAME, name );   //Пишем имя          
     strcpy ( SYM [ISYM].RAZR, "8" );    //Разрядность 8 байт
     strcpy ( SYM [ISYM].INIT, "0B" );    //Значение 0
     SYM [ISYM].TYPE = 'D';              //Тип DEC
@@ -1626,7 +1626,7 @@ int OPA2()
                     memcpy( ASS_CARD._BUFCARD.OPERAC, "ST", 2 );        /* команду записи слова   */
                             
 
-                strcpy( ASS_CARD._BUFCARD.OPERAND,"RRAB," );            /*       доформировать    */
+                strcpy( ASS_CARD._BUFCARD.OPERAND,"@RRAB," );            /*       доформировать    */
                                                                         /*          операнды      */
 
                 strcat(ASS_CARD._BUFCARD.OPERAND, FORMT[0]);            /*           команды      */
@@ -1658,7 +1658,7 @@ int OPA2()
 
                             /*    Arithmetic shift    */
                             memcpy(ASS_CARD._BUFCARD.OPERAC, "SRL", 3);
-                            strcpy( ASS_CARD._BUFCARD.OPERAND, "RRAB," );   
+                            strcpy( ASS_CARD._BUFCARD.OPERAND, "@RRAB," );   
                             int int_offset = 16 - strlen(SYM[j].INIT) + 1;       //Вычисляем смещение
                             char ch_offset[2];
                             sprintf(ch_offset, "%d", int_offset);          
@@ -1672,8 +1672,8 @@ int OPA2()
 
                             /*    Change type    */
                             memcpy(ASS_CARD._BUFCARD.OPERAC, "CVD", 3);
-                            strcpy( ASS_CARD._BUFCARD.OPERAND, "RRAB," );           
-                            strcat( ASS_CARD._BUFCARD.OPERAND, "BUF"); 
+                            strcpy( ASS_CARD._BUFCARD.OPERAND, "@RRAB," );           
+                            strcat( ASS_CARD._BUFCARD.OPERAND, "@BUF"); 
                                                                                 /* вставляем разделитель  */
                             ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
                                                                                 /* и построчный коментарий*/
@@ -1682,10 +1682,10 @@ int OPA2()
                             ZKARD();
 
                             /*    Load addres to register    */
-                            AddTemp8BytesVariable("BUF");
+                            AddTemp8BytesVariable("@BUF");
                             memcpy(ASS_CARD._BUFCARD.OPERAC, "LA", 2);
-                            strcpy( ASS_CARD._BUFCARD.OPERAND, "RADD," );           
-                            strcat( ASS_CARD._BUFCARD.OPERAND, "BUF"); 
+                            strcpy( ASS_CARD._BUFCARD.OPERAND, "@RADD," );           
+                            strcat( ASS_CARD._BUFCARD.OPERAND, "@BUF"); 
                                                                                 /* вставляем разделитель  */
                             ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
                                                                                 /* и построчный коментарий*/
@@ -1696,7 +1696,7 @@ int OPA2()
                             /*    Moving to needed variable    */
                             memcpy(ASS_CARD._BUFCARD.OPERAC, "MVC", 3);
                             strcpy( ASS_CARD._BUFCARD.OPERAND, FORMT[0] );           
-                            strcat( ASS_CARD._BUFCARD.OPERAND, "(3),5(RADD)"); 
+                            strcat( ASS_CARD._BUFCARD.OPERAND, "(3),5(@RADD)"); 
                                                                                 /* вставляем разделитель  */
                             ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
                                                                                 /* и построчный коментарий*/
@@ -1754,14 +1754,14 @@ int OPR2()
                                                         /* блера                  */
 
     memcpy( ASS_CARD._BUFCARD.OPERAC, "BALR", 4 );      /* формируем BALR-операцию*/
-    memcpy( ASS_CARD._BUFCARD.OPERAND, "RBASE,0", 7 );  /* Ассемблера             */
+    memcpy( ASS_CARD._BUFCARD.OPERAND, "@RBASE,0", 8 );  /* Ассемблера             */
                   
     memcpy( ASS_CARD._BUFCARD.COMM,"Load the register of the base", 29 );
           
     ZKARD();                                            /* и запоминаем ее        */
 
     memcpy( ASS_CARD._BUFCARD.OPERAC, "USING", 5 );     /* формируем USING-псевдо-*/
-    memcpy( ASS_CARD._BUFCARD.OPERAND, "*,RBASE", 7 );  /* операцию Ассемблера    */
+    memcpy( ASS_CARD._BUFCARD.OPERAND, "*,@RBASE", 8 );  /* операцию Ассемблера    */
                   
     memcpy( ASS_CARD._BUFCARD.COMM, "Set register as the base", 24 );
           
