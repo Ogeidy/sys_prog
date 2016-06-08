@@ -8,7 +8,7 @@ EX09     START 0            Start of the programm
          MVC   B(3),5(RADD) Moving to needed variable                          
          BCR   15,14        Exit from the programm                             
 A        DC    BL16'101'    Definition of variable                             
-B        DC    PL3'1'       Definition of variable                             
+B        DC    PL3'0'       Definition of variable                             
          DS    0F           Aligment                                           
 BUF      DC    PL8'0'       Definition of variable                             
 RBASE    EQU   15                                                              

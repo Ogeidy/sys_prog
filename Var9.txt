@@ -112,6 +112,18 @@ END 	EX09         		Конец программы
 # Some comments:
 ================
 
+22s - machine's format command
+BALR    '\x05' , 2 , FRR
+BCR     '\x07' , 2 , FRR
+    
+LH      '\x48' , 4 , FRX
+LA      '\x41' , 4 , FRX
+CVD     '\x4E' , 4 , FRX
+SRL     '\x88' , 4 , FRS
+MVC     '\xD2' , 8 , FSS
+N       54  RX
+BAL     45  RX
+
 8Бт - 64бит - двойное слово
 Про строку:
     строка + управляющий блок (максимальная длина, фактическая длина)

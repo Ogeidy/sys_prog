@@ -56,7 +56,6 @@ unsigned char INST [6];                           /*массив, содерж. 
 int FRR();                                        /*подпр.обр.опер.RR-форм. */
 
 /*..........................................................................*/
-
 						                          /*п р о т о т и п  обращ.к*/
 int FRX();                                        /*подпр.обр.опер.RX-форм. */
 /*..........................................................................*/
@@ -74,17 +73,18 @@ int FSS();   //Прототип обращения к подпрограмме �
 int X1 = 1;                                       /* инициализация коорд.   */
 int Y1 = 15;                                      /* на экране              */
 
-int R1,                                           /*номер 1-го регистра-опе-*/
-						                          /*ранда в форматах RR и RX*/
-    R2,                                           /*номер 2-го регистра-опе-*/
-						                          /*ранда в формате RX      */
-    D,                                            /*смещение в формате RX   */
-    X,                                            /*номер индексн. регистра */
-						                          /*в формате RX            */
-    B,                                            /*номер базового регистра */
-						                          /*в формате RX            */
-    B2, //Номер второго базового регистра в формате SS 
-    D2; //Второе смещение в формате SS
+int R1,                                 /*номер 1-го регистра-опе-*/
+						                /*ранда в форматах RR и RX*/
+    R2,                                 /*номер 2-го регистра-опе-*/
+						                /*ранда в формате RX      */
+    D,                                  /*смещение в формате RX   */
+    X,                                  /*номер индексн. регистра */
+						                /*в формате RX            */
+    B,                                  /*номер базового регистра */
+						                /*в формате RX            */
+    B2,                                 //Номер второго базового 
+                                        //регистра в формате SS 
+    D2;                                 //Второе смещение в формате SS
 
 unsigned long I,                                  /*счетчик адр.тек.ком-ды  */
     	      BAS_ADDR,                           /*адрес начала обл.загруз.*/
@@ -112,7 +112,7 @@ union U1                                            /*постоянная ча�
 }R_ASC;
 
 union u2                                        /*шаблон для расчета      */
-{                                              /*элементов абсолютного   */
+{                                               /*элементов абсолютного   */
     struct
     {
         unsigned int SMESH;
@@ -121,7 +121,7 @@ union u2                                        /*шаблон для расче
     unsigned char *P_OBLZ ;
 } POINT;
 
-  unsigned char OBLZ [DOBLZ] ;                    /*область загрузки трас-  */
+unsigned char OBLZ [DOBLZ] ;                      /*область загрузки трас-  */
 						                          /*сируемой программы      */
 /*
 ***** ТАБЛИЦА машинных операций
@@ -212,8 +212,8 @@ int P_LH()
     ADDR = VR[B] + VR[X] + D;                      /*вычисление абс.адреса и */
     sm = (int) ( ADDR - I );                       /*смещения                */
     VR[R1] =                                       /*преобразование содержим.*/
-    OBLZ[BAS_IND + CUR_IND + sm] * 0x100 +        /*второго операнда к виду,*/
-    OBLZ[BAS_IND + CUR_IND + sm + 1];             /*принятому в IBM PC,    */
+        OBLZ[BAS_IND + CUR_IND + sm] * 0x100 +     /*второго операнда к виду,*/
+        OBLZ[BAS_IND + CUR_IND + sm + 1];          /*принятому в IBM PC,    */
 
     if ((VR[R1] & 0x8000) != 0)
         VR[R1] |= 0xFFFF8000L;
@@ -242,6 +242,7 @@ int P_BALR(void)
 
     return 0;
 }
+
 //..........................................................................
 //п р о г р а м м а реализации семантики команды BCR с маской 15
 int P_BCR(void)
@@ -379,44 +380,45 @@ int FRR(void)
 //...........................................................................
 int FRX(void)
 {
-  int i, j;
-  
-  for (i = 0; i < NOP; i++)
-  {
-    if (INST[0] == T_MOP[i].CODOP)
-    {
-      waddstr(wgreen, "  ");
-      for (j = 0; j < 5; j++)
-        waddch(wgreen, T_MOP[i].MNCOP[j]);
-      waddstr(wgreen, " ");
-      
-      j = INST[1] >> 4;
-      R1 = j;
-      wprintw(wgreen, "%.1d, ", j);
-      
-      j = INST[2] % 16;
-      j = j * 256 + INST[3];
-      D = j;
-      wprintw(wgreen, "X'%.3X'(", j);
-      
-      j = INST[1] % 16;
-      X = j;
-      wprintw(wgreen, "%1d, ", j);
-      
-      j = INST[2] >> 4;
-      B = j;
-      wprintw(wgreen, "%1d)", j);
-      
-      ADDR = VR[B] + VR[X] + D;
-      wprintw(wgreen,"        %.06lX       \n", ADDR);
-      if (ADDR % 4 != 0)
-        return (7);
-      break;
-    }
-  }
+    int i, j;
 
-  return 0;
+    for (i = 0; i < NOP; i++)
+    {
+        if (INST[0] == T_MOP[i].CODOP)
+        {
+            waddstr(wgreen, "  ");
+            for (j = 0; j < 5; j++)
+                waddch(wgreen, T_MOP[i].MNCOP[j]);
+            waddstr(wgreen, " ");
+
+            j = INST[1] >> 4;
+            R1 = j;
+            wprintw(wgreen, "%.1d, ", j);
+
+            j = INST[2] % 16;
+            j = j * 256 + INST[3];
+            D = j;
+            wprintw(wgreen, "X'%.3X'(", j);
+
+            j = INST[1] % 16;
+            X = j;
+            wprintw(wgreen, "%1d, ", j);
+
+            j = INST[2] >> 4;
+            B = j;
+            wprintw(wgreen, "%1d)", j);
+
+            ADDR = VR[B] + VR[X] + D;
+            wprintw(wgreen,"        %.06lX       \n", ADDR);
+            if (ADDR % 4 != 0)
+                return (7);
+            break;
+        }
+    }
+
+    return 0;
 } 
+
 //...........................................................................
 //Подпрограмма обработки операндов RS-форм
 int FRS() 
@@ -520,210 +522,211 @@ int FSS()
 //---------------------------------------------------------------------------
 int wind(void)
 {
-  int j1, k, temp;
-  
-  x = 0;
-  y = 16;
-   
-  kk = CUR_IND;
-  LIGHTPTR = I1;
-  
-  for (j1 = 0; j1 < 8; j1++)
-  {
-    wprintw(wred, "%.06lX: ", I1);	
-    for (j = 0; j < 4; j++)
-    {
-      for (k = 0; k < 4; k++)
-	wprintw(wred, "%.02X", OBLZ[BAS_IND + kk + j * 4 + k]);
-      waddstr(wred, " ");
-    }
+    int j1, k, temp;
 
-    waddstr(wred, "/* ");
-    for (j = 0; j < 16; j++)
-    {
-      if (isprint (OBLZ[BAS_IND + kk]) )  
-      {
-	waddch(wred, OBLZ[BAS_IND + kk++]);
-	wrefresh(wred);
-      }	
-      else 
-      {
-        waddstr(wred, ".");
-	kk++;
-      }
-    }
+    x = 0;
+    y = 16;
 
-    waddstr(wred, " */");
-    I1 += 16;
-  }
-  wrefresh(wred);			//вывод на экран
-  wclear(wred);				//очистка содержимого окна дампа
-  
-  return 0;
+    kk = CUR_IND;
+    LIGHTPTR = I1;
+
+    for (j1 = 0; j1 < 8; j1++)
+    {
+        wprintw(wred, "%.07lX: ", I1);	
+        for (j = 0; j < 4; j++)
+        {
+            for (k = 0; k < 4; k++)
+                wprintw(wred, "%.02X", OBLZ[BAS_IND + kk + j * 4 + k]);
+            waddstr(wred, " ");
+        }
+
+        waddstr(wred, "/* ");
+        for (j = 0; j < 16; j++)
+        {
+            if (isprint (OBLZ[BAS_IND + kk]) )  
+            {
+                waddch(wred, OBLZ[BAS_IND + kk++]);
+                wrefresh(wred);
+            }	
+            else 
+            {
+                waddstr(wred, ".");
+                kk++;
+            }
+        }
+
+        waddstr(wred, " */");
+        I1 += 16;
+    }
+    wrefresh(wred);			//вывод на экран
+    wclear(wred);				//очистка содержимого окна дампа
+
+    return 0;
 }
+
 //---------------------------------------------------------------------------
 //программа покомандной интерпретпции(отладки)
 // загруженной программы
 int sys(void) 			
 {
-  int res, temp;
-  int ch;
-  int gr_pos_x, gr_pos_y;
-  int ii = 0, jj = 0;
-  int gr_y;
-  char wstr[80];
-  int zizi = 0, tempI;
-  
-  
-  I = BAS_ADDR;			//установить текущий адрес
-  				//равный начальному
+    int res, temp;
+    int ch;
+    int gr_pos_x, gr_pos_y;
+    int ii = 0, jj = 0;
+    int gr_y;
+    char wstr[80];
+    int zizi = 0, tempI;
+
+
+    I = BAS_ADDR;			//установить текущий адрес
+    				        //равный начальному
 //нижнее поле     
-  wmargenta = newwin(1, 80, 24, 0);
-  wbkgd(wmargenta, COLOR_PAIR(COLOR_MAGENTA));
-  waddstr(wmargenta, "\"PgUp\",\"PgDn\",\"Up\",\"Down\"->View dump; \"Enter\"->Execute the next command");
+    wmargenta = newwin(1, 80, 24, 0);
+    wbkgd(wmargenta, COLOR_PAIR(COLOR_MAGENTA));
+    waddstr(wmargenta, "\"PgUp\",\"PgDn\",\"Up\",\"Down\"->View dump; \"Enter\"->Execute the next command");
       
 //строка состояния
-  wcyan = newwin(1, 80, 23, 0);
-  wbkgd(wcyan, COLOR_PAIR(COLOR_CYAN));
-  
+    wcyan = newwin(1, 80, 23, 0);
+    wbkgd(wcyan, COLOR_PAIR(COLOR_CYAN));
+
 //дамп области загрузки
-  wred = newwin(8, 67, 15, 0);
-  wbkgd(wred, COLOR_PAIR(COLOR_RED));
-  
+    wred = newwin(8, 67, 15, 0);
+    wbkgd(wred, COLOR_PAIR(COLOR_RED));
+
 //поле регистров
-  wblue = newwin(16, 12, 0, 68);
-  wbkgd(wblue, COLOR_PAIR(COLOR_BLUE));
-  
+    wblue = newwin(16, 12, 0, 68);
+    wbkgd(wblue, COLOR_PAIR(COLOR_BLUE));
+
 //текст  
-  gr_pos_x = 0;
-  gr_pos_y = 14; 
-  gr_y = 11;
-  wgreen = newwin(gr_y, 67, gr_pos_y, gr_pos_x);	//создадим новое окно
-  wbkgd(wgreen, COLOR_PAIR(COLOR_GREEN));	//выбор цветовой пары
-  
- 
-  keypad(wmargenta, TRUE);				//разрешить преобразование кодов клавиатуры
+    gr_pos_x = 0;
+    gr_pos_y = 14; 
+    gr_y = 11;
+    wgreen = newwin(gr_y, 67, gr_pos_y, gr_pos_x);	//создадим новое окно
+    wbkgd(wgreen, COLOR_PAIR(COLOR_GREEN));	        //выбор цветовой пары
+
+
+    keypad(wmargenta, TRUE);				        //разрешить преобразование кодов клавиатуры
 
 BEGIN:  
 
 //все допустимые коды к-нд сравнить с текущей и при 
-//совпадениизапомнить номер строки таблицы операций
-  for (i = 0; i < NOP; i++)
-  {
-    if (OBLZ[BAS_IND + CUR_IND] == T_MOP[i].CODOP)
+//совпадении запомнить номер строки таблицы операций
+    for (i = 0; i < NOP; i++)
     {
-      k = i;
-      wprintw(wgreen, "%.06lX: ", I);
+        if (OBLZ[BAS_IND + CUR_IND] == T_MOP[i].CODOP)
+        {
+            k = i;
+            wprintw(wgreen, "%.07lX: ", I);
 //рисуем окно, выводим текст
-      for (j = 0; j < 6; j++)                     /*                        */
-      {                                        /*                        */
-        if (j < T_MOP[i].DLOP)                  /*                        */
-        {                                      /* выдать шестнадцатеричн.*/
-	     wprintw(wgreen, "%.02X", OBLZ[BAS_IND + CUR_IND + j]);
-						  /* запомнить его же в     */
-        INST[j] =                                   /* переменной INST,       */
-  		     OBLZ [BAS_IND + CUR_IND + j];/*                        */
-        }                                      /*                        */
-        else INST [j] = '\x00';                     /*                        */
-      }
-      if ((res = T_MOP[i].BXPROG()) != 0)    /* уйти в программу отобр.*/
-	return (res);   			  /* ассемблерного эквивале-*/
-						  /* нта текущей команды,   */
-						  /*                        */
-	goto l0;                                  /* перейти к дальнейшей  */
-    }                  
-  }
-  return (6);
+            for (j = 0; j < 6; j++)                    
+            {                                          
+                if (j < T_MOP[i].DLOP)                  
+                {                                       /* выдать шестнадцатеричн.*/
+                    wprintw(wgreen, "%.02X", OBLZ[BAS_IND + CUR_IND + j]);
+                                                        /* запомнить его же в     */
+                    INST[j] =                           /* переменной INST,       */
+                    OBLZ [BAS_IND + CUR_IND + j];
+                }                                     
+                else INST [j] = '\x00';                     
+            }
+            if ((res = T_MOP[i].BXPROG()) != 0)         /* уйти в программу отобр.*/
+                return (res);   			            /* ассемблерного эквивале-*/
+                                                        /* нта текущей команды,   */
+                                                        /*                        */
+            goto l0;                                    /* перейти к дальнейшей  */
+        }                  
+    }
+    return (6);
   
 l0:
 //сдвиг окна вверх
-  wrefresh(wgreen);
-  ii++;
-  if (gr_pos_y > 14 - gr_y + 1)
-    mvwin(wgreen, gr_pos_y--, gr_pos_x);
+    wrefresh(wgreen);
+    ii++;
+    if (gr_pos_y > 14 - gr_y + 1)
+        mvwin(wgreen, gr_pos_y--, gr_pos_x);
 //при достижении некоторого положения, движение останавливается, и производится 
 //прокрутка окна
-  else
-  {
-      for (jj = 0; jj < gr_y - 1; jj++)
-      {
-        temp = mvwinnstr(wgreen, jj + 1, 0, wstr, 67);    
-        mvwaddnstr(wgreen, jj, 0, wstr, 67);
-        wrefresh(wgreen);
-      }
-  } 
-  wrefresh(wgreen);
+    else
+    {
+        for (jj = 0; jj < gr_y - 1; jj++)
+        {
+            temp = mvwinnstr(wgreen, jj + 1, 0, wstr, 67);    
+            mvwaddnstr(wgreen, jj, 0, wstr, 67);
+            wrefresh(wgreen);
+        }
+    } 
+    wrefresh(wgreen);
   
-  I += T_MOP[k].DLOP;                            /*коррекция счет-ка.адреса*/
-  CUR_IND = ( int ) ( I - BAS_ADDR );            /*уст-ка текущ. индекса   */
-						  /*в массиве OBLZ          */
-  I1 = I;                                        /*установка адреса начала */
+    I += T_MOP[k].DLOP;                            /*коррекция счет-ка.адреса*/
+    CUR_IND = ( int ) ( I - BAS_ADDR );            /*уст-ка текущ. индекса   */
+    					  /*в массиве OBLZ          */
+    I1 = I;                                        /*установка адреса начала */
 						  /*области отсветки        */
       
-  for ( i = 0; i < 16; i++)
-  {
-    if (i < 10)
-      waddstr(wblue, "R0");
-    else 
-      waddstr(wblue, "R");
-    wprintw(wblue, "%d:", i);
-    wprintw(wblue, "%.08lX", VR[i]);
-  }      
-  wrefresh(wblue);			//вывод на экран		  
-  wclear(wblue);			//очистка окна регистров
-  wind();   
+    for ( i = 0; i < 16; i++)
+    {
+        if (i < 10)
+            waddstr(wblue, "R0");
+        else 
+            waddstr(wblue, "R");
+        wprintw(wblue, "%d:", i);
+        wprintw(wblue, "%.08lX", VR[i]);
+    }      
+    wrefresh(wblue);			//вывод на экран		  
+    wclear(wblue);			//очистка окна регистров
+    wind();   
       
-  waddstr(wcyan, "готовность к выполнению очередной команды с адресом ");
-  wprintw(wcyan, "%.06lX", I - T_MOP[k].DLOP);
-  waddstr(wcyan, "\n");    				
-  wrefresh(wcyan);
-  wclear(wcyan);
+    waddstr(wcyan, "Ready to perform the next command with address ");
+    wprintw(wcyan, "%.06lX", I - T_MOP[k].DLOP);
+    waddstr(wcyan, "\n");    				
+    wrefresh(wcyan);
+    wclear(wcyan);
 
 WAIT:
   
-  CUR_IND = (int)(I - BAS_ADDR);
+    CUR_IND = (int)(I - BAS_ADDR);
 
-  ch = wgetch(wmargenta);
+    ch = wgetch(wmargenta);
 
-  switch (ch)
-  {
-    case 10:
+    switch (ch)
     {
-      goto SKIP;
+        case 10:
+        {
+            goto SKIP;
+        }
+
+        case  KEY_UP:
+        {
+            I1 = LIGHTPTR - 16;
+            CUR_IND = (int)(I1 - BAS_ADDR);
+            wind();
+            goto WAIT;
+        }
+
+        case  KEY_DOWN:
+        {
+            I1 = LIGHTPTR + 16;
+            CUR_IND = (int)(I1 - BAS_ADDR);
+            wind();
+            goto WAIT;      
+        }
+
+        case  KEY_PPAGE:
+        {
+            I1 = LIGHTPTR - 128;
+            CUR_IND = (int)(I1 - BAS_ADDR);
+            wind();
+            goto WAIT;
+        }
+
+        case  KEY_NPAGE:
+        {
+            I1 = LIGHTPTR + 128 ;
+            CUR_IND = (int)(I1 - BAS_ADDR);
+            wind();
+            goto WAIT;
+        }
     }
-    
-    case  KEY_UP:
-    {
-      I1 = LIGHTPTR - 16;
-      CUR_IND = (int)(I1 - BAS_ADDR);
-      wind();
-      goto WAIT;
-    }
-    
-    case  KEY_DOWN:
-    {
-      I1 = LIGHTPTR + 16;
-      CUR_IND = (int)(I1 - BAS_ADDR);
-      wind();
-      goto WAIT;      
-    }
-    
-    case  KEY_PPAGE:
-    {
-      I1 = LIGHTPTR - 128;
-      CUR_IND = (int)(I1 - BAS_ADDR);
-      wind();
-      goto WAIT;
-    }
-    
-    case  KEY_NPAGE:
-    {
-      I1 = LIGHTPTR + 128 ;
-      CUR_IND = (int)(I1 - BAS_ADDR);
-      wind();
-      goto WAIT;
-    }
-  }
 goto WAIT;
 
 SKIP:
@@ -772,25 +775,26 @@ SKIP:
             break;
     }
    
-   goto BEGIN;	
-   
-   delwin(wblue);			  
-   delwin(wred);
-   delwin(wgreen);
-   delwin(wmargenta);
+    goto BEGIN;	
 
-  return 0;
+    delwin(wblue);			  
+    delwin(wred);
+    delwin(wgreen);
+    delwin(wmargenta);
+
+    return 0;
 }
+
 //...........................................................................
 //..........................Инициализация curses..............................
 int InitCurses(void)
 {
   initscr();					//инициализация библиотеки curses
   curs_set(0);
-  noecho();					//не показывать ввод
-  cbreak();					//читать один символ 
-                                                //за раз, не ждать \n
-  keypad(stdscr, TRUE);				//разрешить преобразование кодов клавиатуры
+  noecho();					    //не показывать ввод
+  cbreak();					    //читать один символ 
+                                //за раз, не ждать \n
+  keypad(stdscr, TRUE);			//разрешить преобразование кодов клавиатуры
   start_color(); 
 
   
@@ -887,32 +891,32 @@ CONT2:
     J = J << 4;                                     /*OBLZ в переменной J     */
     J += POINT.VAL_P.SMESH;
 
-    if ( ( J0 = (int) J%8 ) == 0 )                  /*выровнять полученное    */
+    if ( (J0 = (int)J%8) == 0 )                     /*выровнять полученное    */
     {
-        BAS_ADDR = J;                                 /*значение на границу     */
+        BAS_ADDR = J;                               /*значение на границу     */
         BAS_IND  = 0;
     }
     else                                            /*двойного слова и запомн.*/
     {
-        BAS_ADDR = ( ( J >> 3 ) + 1 ) << 3;           /*его в перем.BAS_ADDR,а  */
-        BAS_IND = 8 - J0;                             /*соотв.индекс масс.OBLZ-в*/
-    }						                     /*перем.BAS_IND           */
+        BAS_ADDR = ( ( J >> 3 ) + 1 ) << 3;         /*его в перем.BAS_ADDR,а  */
+        BAS_IND = 8 - J0;                           /*соотв.индекс масс.OBLZ-в*/
+    }						                        /*перем.BAS_IND           */
 
     for ( I = 0; I < IOBJC; I++ )                   /*перебирая все считанные */
-    {                                              /*карты об'ектных файлов, */
-        if ( !memcmp ( &OBJCARD [I][1] , "TXT" , 3 ) )/*отобрать принадл.к типу */
-        {                                            /*TXT и расчитать:        */
-            memcpy ( TXT.BUF_TXT , OBJCARD [I] , 80 );  /*                        */
+    {                                               /*карты об'ектных файлов, */
+        if ( !memcmp(&OBJCARD[I][1], "TXT", 3) )    /*отобрать принадл.к типу */
+        {                                           /*TXT и расчитать:        */
+            memcpy(TXT.BUF_TXT, OBJCARD[I], 80);    /*                        */
             J = TXT.STR_TXT.ADOP [0];                   /* в переменной J начальн.*/
             J = (J << 8) + TXT.STR_TXT.ADOP [1];        /*  индекс загрузки в мас-*/
             J = (J << 8) + TXT.STR_TXT.ADOP [2];        /*  сиве OBLZ             */
             J += BAS_IND;                               /*и                       */
-            				  /*                        */
+            				                            /*                        */
             K = TXT.STR_TXT.DLNOP [0];                  /* в переменной K длину   */
             K = (K << 8) + TXT.STR_TXT.DLNOP [1];       /* загружаемых данных     */
 
             for ( N=0; N < K; N++ )                     /*загрузить данные с очер.*/
-                OBLZ [ (int) J++ ] = TXT.STR_TXT.OPER [N]; /*об'ектной карты         */
+                OBLZ[(int)J++] = TXT.STR_TXT.OPER[N];   /*об'ектной карты         */
         }
     }
 
