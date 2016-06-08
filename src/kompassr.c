@@ -158,9 +158,9 @@ int SSS();                                        /*подпр.обр.опер.S
 
      {{'L','H',' ',' ',' '} , '\x48' , 4 , FRX} , /*                        */
      {{'L','A',' ',' ',' '} , '\x41' , 4 , FRX} , /*                        */
-	 {{'C','V','D',' ',' '} , '\x4E' , 4 , FRX} , /*                        */
-	 {{'S','R','L',' ',' '} , '\x88' , 4 , FRS} , /*                        */
-	 {{'M','V','C',' ',' '} , '\xD2' , 6 , FSS}, /*                        */
+     {{'C','V','D',' ',' '} , '\x4E' , 4 , FRX} , /*                        */
+  	 {{'S','R','L',' ',' '} , '\x88' , 4 , FRS} , /*                        */
+  	 {{'M','V','C',' ',' '} , '\xD2' , 8 , FSS}, /*                        */
     };
 
 /*
@@ -244,6 +244,24 @@ int SSS();                                        /*подпр.обр.опер.S
     struct OPRX OP_RX;                            /*структурировать его     */
    } RX;
 
+
+struct OPSS                                     /*структ.буф.опер.форм.SS */
+   {
+    unsigned char OP;                             /*код операции            */
+    unsigned char L1L2;                           /*L1 и L2                 */
+    short B1D1;                                   /*B1 и D1                 */
+    short B2D2; 
+    int LEN;                                  /*B2 и D2                 */
+   };
+
+  union                                           /*определить об'единение  */
+   {
+    unsigned char BUF_OP_SS [8];                  /*оределить буфер         */
+    struct OPSS OP_SS;                            /*структурировать его     */
+   } SS;
+
+
+
   struct STR_BUF_ESD                              /*структ.буфера карты ESD */
    {
     unsigned char POLE1      ;                    /*место для кода 0x02     */
@@ -301,22 +319,6 @@ struct STR_BUF_END                                /*структ.буфера к
     struct STR_BUF_END STR_END;                   /*структура буфера        */
     unsigned char BUF_END [80];                   /*буфер карты ESD         */
    } END;
-
-
-struct OPSS                                     /*структ.буф.опер.форм.SS */
-   {
-    unsigned char OP;                             /*код операции            */
-    unsigned char L1L2;                           /*L1 и L2                 */
-    short B1D1;                                   /*B1 и D1                 */
-    short B2D2; 
-    int LEN;                                  /*B2 и D2                 */
-   };
-
-  union                                           /*определить об'единение  */
-   {
-    unsigned char BUF_OP_SS [6];                  /*оределить буфер         */
-    struct OPSS OP_SS;                            /*структурировать его     */
-   } SS;
 
 /*
 ******* Б Л О К  об'явлений подпрограмм, используемых при 1-ом просмотре
@@ -535,7 +537,7 @@ void STXT( int ARG )                              /*подпр.формир.TXT-
    }
    else if (ARG == 6)
    {
-    memcpy ( TXT.STR_TXT.OPER , RX.BUF_OP_RX , 6);/* для RX-формата         */
+    memcpy ( TXT.STR_TXT.OPER , SS.BUF_OP_SS , 6);/* для SS-формата         */
     TXT.STR_TXT.DLNOP [1] = 6;
    }
   memcpy (TXT.STR_TXT.POLE9,ESD.STR_ESD.POLE11,8);/*формиров.идентифик.поля */
@@ -949,6 +951,8 @@ int SRX()                                         /*подпр.обр.опер.R
 	RX.OP_RX.OP = T_MOP[I3].CODOP;                  /*формирование кода операц*/
 	METKA1 = strtok((char*) TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, ",");
 	METKA2 = strtok(NULL, " ");
+  // printf("%s\n", METKA1);
+  // printf("%s\n", METKA2);
 
 	if ( isalpha ( (int) *METKA1 ) )              
 	{                                             
@@ -1000,9 +1004,10 @@ int SSS() {
     op3 = strtok(NULL, ")");
     // printf("get len2 %s\n", len2);
 
-    SS.OP_SS.LEN = atoi(len1) - 1;
+    // SS.OP_SS.LEN = atoi(len1) - 1;
 
     SS.OP_SS.OP  = T_MOP[I3].CODOP;
+    printf("%d\n", SS.OP_SS.OP);
 
     if (isalpha((int) *op1))
     {
@@ -1321,8 +1326,8 @@ CONT3:
  T_MOP[5].BXPROG = SRX;
  T_MOP[6].BXPROG = SRX;
  T_MOP[7].BXPROG = SRX;
- T_MOP[8].BXPROG = SRS;
- T_MOP[9].BXPROG = SRX;
+ T_MOP[8].BXPROG = SRX;
+ T_MOP[9].BXPROG = SRS;
  T_MOP[10].BXPROG = SSS;
 
  T_POP[0].BXPROG = SDC;                           /*установить указатели    */
