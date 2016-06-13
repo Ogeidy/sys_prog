@@ -1217,7 +1217,7 @@ int AVI2()
                 }
                 else if( SYM[i].TYPE == 'L' )                           /* в случае типа=bit      */
                 {
-                    memcpy(ASS_CARD._BUFCARD.OPERAC, "LH", 2);
+                    memcpy(ASS_CARD._BUFCARD.OPERAC, "L", 1);
                     strcpy( ASS_CARD._BUFCARD.OPERAND, "@RRAB," );                                            
                     strcat( ASS_CARD._BUFCARD.OPERAND, FORMT[0]); 
                                                                         /* вставляем разделитель  */
@@ -1498,7 +1498,7 @@ int OEN2()
                 ASS_CARD._BUFCARD.METKA[strlen(ASS_CARD._BUFCARD.METKA)] = ' ';
                 memcpy( ASS_CARD._BUFCARD.OPERAC, "DC", 2 ); 
                 strcpy( ASS_CARD._BUFCARD.OPERAND,"BL" );  
-                strcat( ASS_CARD._BUFCARD.OPERAND, "16" );
+                strcat( ASS_CARD._BUFCARD.OPERAND, "4" );
                 strcat( ASS_CARD._BUFCARD.OPERAND, "\'" );
                 SYM[i].INIT[strlen(SYM[i].INIT) - 1] = '\0';
                 strcat( ASS_CARD._BUFCARD.OPERAND, SYM[i].INIT );
@@ -1656,17 +1656,17 @@ int OPA2()
                         if( SYM[j].TYPE == 'L' )              /* если этот идентификатор*/
                         {
 
-                            /*    Arithmetic shift    */
+                            /*    Logic shift    */
                             memcpy(ASS_CARD._BUFCARD.OPERAC, "SRL", 3);
                             strcpy( ASS_CARD._BUFCARD.OPERAND, "@RRAB," );   
-                            int int_offset = 16 - strlen(SYM[j].INIT) + 1;       //Вычисляем смещение
+                            int int_offset = 32 - strlen(SYM[j].INIT) + 1;       //Вычисляем смещение
                             char ch_offset[2];
                             sprintf(ch_offset, "%d", int_offset);          
                             strcat( ASS_CARD._BUFCARD.OPERAND, ch_offset); 
                                                                                 /* вставляем разделитель  */
                             ASS_CARD._BUFCARD.OPERAND[strlen(ASS_CARD._BUFCARD.OPERAND)] = ' ';    
                                                                                 /* и построчный коментарий*/
-                            memcpy( ASS_CARD._BUFCARD.COMM, "Arithmetic shift", 16 );   
+                            memcpy( ASS_CARD._BUFCARD.COMM, "Logic shift", 11 );   
                             
                             ZKARD();
 
