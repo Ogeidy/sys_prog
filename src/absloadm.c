@@ -155,6 +155,7 @@ struct TMOP                                        /*структ.стр.таб�
 int P_SRL() 
 {               
     VR[R1] >>= D; //Сдвиг регистра на велечину, записанную в смещении
+    printf("FUCK!!!!!!!!!!!\n");
     return 0;   
 }
 
@@ -758,13 +759,13 @@ SKIP:
             P_S();
             break;
         //---------
-        case '\x88': 
+        case 0x88: 
             P_SRL();
             break;
         case '\x4E': 
             P_CVD();
             break;
-        case '\xD2': 
+        case 0xD2: 
             P_CVD();
             break;
         case '\x48': 

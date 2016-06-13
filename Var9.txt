@@ -60,16 +60,16 @@ EX09    START   0
         BALR    RBASE, 0                   
         USING   *, RBASE       
                     
-        LH      RRAB, A         -   загрузили в регистр значение переменной А (с. 47)
+        L       RRAB, A         -   загрузили в регистр значение переменной А (с. 47)
 
-        SRL     RRAB, 13        -   арифметический сдвиг вправо на 13 (16-CLA)(с.75) 
+        SRL     RRAB, 29        -   арифметический сдвиг вправо на 13 (16-CLA)(с.75) 
         CVD     RRAB, BUF       -   Смена типа     F(101)->P(5)  (с. 95)
         LA      RADD, BUF       -   загрузка адреса BUF в регистр RADD
         MVC     B(3), 5(RADD)   -   перемещение
           
         BCR     15, 14     
 
-A       DC      BL.16'101'      
+A       DC      BL4'101'      
 B       DC      PL3'0'             
         DS      0F            
 BUF     DC      PL8'0'        
@@ -77,7 +77,7 @@ RBASE   EQU     15
 RRAB    EQU     5              
 RADD    EQU     4               
 
-END     EX09           
+END                
 
 ##----------------- The decision of last years --------------------------
 
