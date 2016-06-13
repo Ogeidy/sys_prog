@@ -250,15 +250,15 @@ union                                           /*определить об'ед
 struct OPSS                                     /*структ.буф.опер.форм.SS */
 {
     unsigned char OP;                             /*код операции            */
-    unsigned char L1L2;                           /*L1 и L2                 */
-    short B1D1;                                   /*B1 и D1                 */
-    short B2D2; 
-    int LEN;                                  /*B2 и D2                 */
+    unsigned char L1;                           /*L1 и L2                 */
+    short B1D1;                                 /*код операции            */
+    unsigned char L2;                           /*код операции            */
+    unsigned char X2;
 };
 
 union                                           /*определить об'единение  */
 {
-    unsigned char BUF_OP_SS [8];                  /*оределить буфер         */
+    unsigned char BUF_OP_SS [6];                  /*оределить буфер         */
     struct OPSS OP_SS;                            /*структурировать его     */
 } SS;
 
@@ -1043,19 +1043,14 @@ int SSS() {
     char *tmp;
 
     op1 = strtok((char *) TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, "(");
-    // printf("get op1 %s\n", op1);
     len1 = strtok(NULL, ")");
-    // printf("get len1 %s\n", len1);
     char * t = strtok(NULL, ",");
     op2 = strtok(t, "(");
-    // printf("get op2 %s\n", op2);
     op3 = strtok(NULL, ")");
-    // printf("get len2 %s\n", len2);
 
-    // SS.OP_SS.LEN = atoi(len1) - 1;
 
     SS.OP_SS.OP  = T_MOP[I3].CODOP;
-    printf("%d\n", SS.OP_SS.OP);
+    SS.OP_SS.L1 = atoi(len1);
 
     if (isalpha((int) *op1) || op1[0] == '@')
     {
@@ -1104,37 +1099,12 @@ CNT1:
             tmp = strtok((char *) T_SYM[i].IMSYM, " ");
             if (!strcmp(tmp, op3))
             {
-                rbase = 0;
-                delta = 0xfff - 1;
-                offset = T_SYM[i].ZNSYM;
-                for (j = 0; j < 15; j++)
-                {
-                    if (T_BASR[j].PRDOST == 'Y' &&
-                        offset - T_BASR[j].SMESH >= 0 &&
-                        offset - T_BASR[j].SMESH < delta)
-                    {
-                        rbase = j + 1;
-                        delta = offset - T_BASR[j].SMESH;
-                    }
-                }
-                if (rbase == 0 || delta > 0xfff)
-                    return 5;
-                else
-                {
-                    SS.OP_SS.B2D2 = rbase << 12;
-                    SS.OP_SS.B2D2 = SS.OP_SS.B2D2 + delta;
-                    tmp = (char *) &SS.OP_SS.B2D2;
-                    swab(tmp, tmp, 2);
-                    goto CNT2;
-                }
+                SS.OP_SS.X2 = atoi(op2);
+                SS.OP_SS.L2 = T_SYM[i].ZNSYM << 4;
+                goto CNT2;
             }
         }
-        printf("FAIL 3\n");
-        return 2;
-    }
-    else
-        printf("FAIL 4\n");
-        return 2;
+    } 
 
 CNT2:
     STXT(6);
