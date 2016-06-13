@@ -348,13 +348,13 @@ int FDC()                                         /*подпр.обр.пс.оп�
             if (TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[1]=='L')
             {
                 size = atoi(&TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[2]);
-                T_SYM[ITSYM].DLSYM = ( size - 1 ) / 8 + 1; 
+                T_SYM[ITSYM].DLSYM = size;
                 T_SYM[ITSYM].PRPER = 'R';                   
                 if (!(size % 4)) 
                 {
                     size = size + 4 - (size % 4);
                 }
-                // CHADR = (CHADR /4 + size/4) * 4;
+                CHADR = (CHADR /4 + size/4) * 4;
                 T_SYM[ITSYM].ZNSYM = CHADR;
                 PRNMET = 'N'; 
             }
@@ -370,7 +370,7 @@ int FDC()                                         /*подпр.обр.пс.оп�
                 {
                     size = size + 4 - (size % 4);
                 }
-                // CHADR = (CHADR /4 + size/4) * 4;                  
+                CHADR = (CHADR /4 + size/4) * 4;                  
                 T_SYM[ITSYM].ZNSYM = CHADR;
                 PRNMET = 'N'; 	
             }
@@ -537,8 +537,8 @@ void STXT( int ARG )                              /*подпр.формир.TXT-
   if ( ARG == 1 )                                 /*формирование поля OPER  */
   {
     memset ( TXT.STR_TXT.OPER , 64 , 8 );
-    memcpy ( TXT.STR_TXT.OPER,BL_BUFFER , 1 ); /* для RR-формата         */
-    TXT.STR_TXT.DLNOP [1] = 1;
+    memcpy ( TXT.STR_TXT.OPER,BL_BUFFER , 4 ); 
+    TXT.STR_TXT.DLNOP [1] = 4;
   }
   else if ( ARG == 2 )                                 /*формирование поля OPER  */
    {
