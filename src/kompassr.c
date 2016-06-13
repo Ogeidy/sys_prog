@@ -121,6 +121,8 @@ union                                            /*определить об'е�
 */
 
  int CHADR;                                       /*счетчик                 */
+char PL8_BUFFER[8];
+char BL_BUFFER[1];
 
 /*
 ***** ТАБЛИЦА символов
@@ -352,7 +354,7 @@ int FDC()                                         /*подпр.обр.пс.оп�
                 {
                     size = size + 4 - (size % 4);
                 }
-                CHADR = (CHADR /4 + size/4) * 4;
+                // CHADR = (CHADR /4 + size/4) * 4;
                 T_SYM[ITSYM].ZNSYM = CHADR;
                 PRNMET = 'N'; 
             }
@@ -368,7 +370,7 @@ int FDC()                                         /*подпр.обр.пс.оп�
                 {
                     size = size + 4 - (size % 4);
                 }
-                CHADR = (CHADR /4 + size/4) * 4;                  
+                // CHADR = (CHADR /4 + size/4) * 4;                  
                 T_SYM[ITSYM].ZNSYM = CHADR;
                 PRNMET = 'N'; 	
             }
@@ -380,7 +382,7 @@ int FDC()                                         /*подпр.обр.пс.оп�
         if ( CHADR % 4 )                               /*и CHADR не кратен 4,то: */
             CHADR = (CHADR /4 + 1) * 4;                   /* установ.CHADR на гр.сл.*/
 
-    CHADR = CHADR + 4;                              /*увелич.CHADR на 4 и     */
+    CHADR = CHADR + size;                              /*увелич.CHADR на 4 и     */
     return (0);                                     /*успешно завершить подпр.*/
 }
 
@@ -532,7 +534,13 @@ void STXT( int ARG )                              /*подпр.формир.TXT-
   TXT.STR_TXT.ADOP[1]  = *(PTR+1);                /*двоичного целого        */
   TXT.STR_TXT.ADOP[0]  = '\x00';                  /*в соглашениях ЕС ЭВМ    */
 
-  if ( ARG == 2 )                                 /*формирование поля OPER  */
+  if ( ARG == 1 )                                 /*формирование поля OPER  */
+  {
+    memset ( TXT.STR_TXT.OPER , 64 , 8 );
+    memcpy ( TXT.STR_TXT.OPER,BL_BUFFER , 1 ); /* для RR-формата         */
+    TXT.STR_TXT.DLNOP [1] = 1;
+  }
+  else if ( ARG == 2 )                                 /*формирование поля OPER  */
    {
     memset ( TXT.STR_TXT.OPER , 64 , 4 );
     memcpy ( TXT.STR_TXT.OPER,RR.BUF_OP_RR , 2 ); /* для RR-формата         */
@@ -548,6 +556,19 @@ void STXT( int ARG )                              /*подпр.формир.TXT-
     memcpy ( TXT.STR_TXT.OPER , SS.BUF_OP_SS , 6);/* для SS-формата         */
     TXT.STR_TXT.DLNOP [1] = 6;
    }
+  else if (ARG ==8)
+  {
+    memset ( TXT.STR_TXT.OPER , 64 , 8 );
+    memcpy ( TXT.STR_TXT.OPER , PL8_BUFFER , 8);     /* для PL8                */
+    TXT.STR_TXT.DLNOP [1] = 8;
+  }
+  else
+  {
+    memset ( TXT.STR_TXT.OPER , 64 , 8 );
+    memcpy ( TXT.STR_TXT.OPER , RX.BUF_OP_RX , ARG);/* для PL         */
+    TXT.STR_TXT.DLNOP [1] = ARG;
+  }
+
   memcpy (TXT.STR_TXT.POLE9,ESD.STR_ESD.POLE11,8);/*формиров.идентифик.поля */
 
   memcpy ( OBJTEXT[ITCARD] , TXT.BUF_TXT , 80 );  /*запись об'ектной карты  */
@@ -563,26 +584,53 @@ int SDC()                                         /*подпр.обр.пс.оп�
     RX.OP_RX.OP   = 0;                              /*занулим два старших     */
     RX.OP_RX.R1X2 = 0;                              /*байта RX.OP_RX          */
     if (!memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, "F'", 2)) /* если операнд начинается*/
-                                                     /* с комбинации   F',        */
-                                                 /* то                     */
     {
-        RAB = strtok((char*)TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND+2, "'");   /*в перем. c указат.RAB   */
-                                                /*выбираем первую лексему */
-                                                /*операнда текущей карты  */
-                                                 /*исх.текста АССЕМБЛЕРА   */
-        
-
+        RAB = strtok((char*)TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND+2, "'");
         RX.OP_RX.B2D2 = atoi ( RAB );                 /*перевод ASCII-> int     */
         RAB = (char *) &RX.OP_RX.B2D2;                /*приведение к соглашениям*/
         swab ( RAB , RAB , 2 );                       /* ЕС ЭВМ                 */
+        STXT (4);                                       /*формирование TXT-карты  */
+        return (0);                                     /*успешн.завершение подпр.*/
+    }
+    else if ( !memcmp( TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, "BL", 2 ) )
+    {
+      RAB=strtok( (char*)TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND + 4, "'" );
+      //Our awesome input
+      int size = strlen(RAB);
+      int value = strtol( RAB, NULL, 2 );
+      char buffer[1];
+      buffer[0] = value<<(8-size);
+      memcpy(BL_BUFFER, buffer, 1);
+      STXT (1);                                       /*формирование TXT-карты  */
+      return (0); 
+    }
+    else if ( !memcmp(TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND, "PL", 2) )
+    {
+      RAB=strtok( (char*)TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND+4, "'" );
+      int size = TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[2]-'0';  
+      
+      RX.OP_RX.B2D2 = atoi ( RAB );                 /*перевод ASCII-> int     */
+      RAB = (char *) &RX.OP_RX.B2D2;                /*приведение к соглашениям*/
+
+      char buffer[8];
+      memset ( buffer , 64 , 8 );
+      buffer[size-1] = 0xC;
+      if (size <= 4)
+      {
+        memset ( buffer , 0 , size-1 );
+        memcpy(RX.BUF_OP_RX, buffer, 4);
+        STXT (size);                                   /*формирование TXT-карты  */
+      }
+      else
+      {
+        memset ( buffer , 0 , 7 );
+        memcpy(PL8_BUFFER, buffer, 8);
+        STXT (size);
+      }                                       /*формирование TXT-карты  */
+      return (0);            /*перевод ASCII-> int     */
     }
     else                                            /*иначе                   */
         return (1);                                    /*сообщение об ошибке     */
-
-    STXT (4);                                       /*формирование TXT-карты  */
-
-
-    return (0);                                     /*успешн.завершение подпр.*/
 }
 
 /*..........................................................................*/
