@@ -31,4 +31,7 @@
 # Debug files
 *.dSYM/
 
-*.bak~
+*.bak~v	
+
+*~
+def.tex
