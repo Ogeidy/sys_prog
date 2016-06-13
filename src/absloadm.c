@@ -190,17 +190,16 @@ int P_CVD()
 //Программа реализации команды MVC
 int P_MVC() 
 {
-    int l1 = LENGTH; //Длина первого операнда
-    int l2 = LENGTH2;    //Длина второго операнда
-    int sm1 = ADDR - I; //Смещение первого операнда
-    int sm2 = ADDR2 - I;//Смещение второго операнда
-    while ( l2 >= 0 &&l1 >= 0 )
+    int l = LENGTH;         //Длина первого операнда
+    int sm1 = ADDR - I;     //Смещение первого операнда
+    int sm2 = ADDR2 - I;    //Смещение второго операнда
+
+    for (int i = 0; i < l; i++)
     {
         //Побайтово копируем из второго операнда в первый
-        OBLZ[BAS_IND + CUR_IND + sm1 + l1] = OBLZ[BAS_IND + CUR_IND + sm2 + l2]; 
-        l1--;
-        l2--;
+        OBLZ[BAS_IND + CUR_IND + sm1 + i] = OBLZ[BAS_IND + CUR_IND + sm2 + i]; 
     }
+    printf("sm1:%d, sm2:%d\n",sm1,sm2);
     return 0;
 }
 
@@ -486,29 +485,24 @@ int FSS()
             /* Вывод первого операнда */
             j = INST[2] % 16;                           
             j = j * 256 + INST[3];                      
-            D = j; // Вывод смещения
+            D = j;                          // Вывод смещения
             wprintw(wgreen,"X'%.3X'(",j);                      
-            j = LENGTH = (INST[1]>>4);
-            wprintw(wgreen,"%1d,", j+1);
+            j = LENGTH = INST[1];
+            wprintw(wgreen,"%1d,", j);
             j = INST[2] >> 4;
-            B = j; //Вывод базы
+            B = j;                          //Вывод базы
             wprintw(wgreen,"%1d),",j);
-            ADDR = VR[B] + D; //Вычисление абсолютного адреса
+            ADDR = VR[B] + D;               //Вычисление абсолютного адреса
 
             /* Вывод второго операнда */
             j = INST[4] % 16;
             j = j * 256 + INST[5];
-            D2 = j; 
-            //Вывод смещения
+            D2 = j;                         //Вывод смещения
             wprintw(wgreen,"X'%.3X'(",j);
-            LENGTH2 = LENGTH<<4;
-            j = LENGTH2 = INST[1] - LENGTH2;
-            wprintw(wgreen,"%1d,", j+1);
             j = INST[4] >> 4;
-            B2 = j; 
-            //Вывод базы
+            B2 = j;                         //Вывод базы
             wprintw(wgreen,"%1d)",j);
-            ADDR2 = VR[B2] + D2; //Запись абсолютного адреса
+            ADDR2 = VR[B2] + D2;            //Запись абсолютного адреса
 
             /* Вывод абсолютных адресов операндов */
             wprintw(wgreen,"%.06lX,%.06lX\n",ADDR, ADDR2);   
@@ -766,7 +760,7 @@ SKIP:
             P_CVD();
             break;
         case 0xD2: 
-            P_CVD();
+            P_MVC();
             break;
         case '\x48': 
             P_LH();
