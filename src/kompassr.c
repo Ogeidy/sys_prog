@@ -614,7 +614,7 @@ int SDC()                                         /*подпр.обр.пс.оп�
 
       char buffer[8];
       memset ( buffer , 64 , 8 );
-      buffer[size-1] = 0xC;
+      buffer[size-1] = 0x0;
       if (size <= 4)
       {
         memset ( buffer , 0 , size-1 );
