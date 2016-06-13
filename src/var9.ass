@@ -14,4 +14,4 @@ B        DC    PL3'0'       Definition of variable
 @RBASE   EQU   15                                                              
 @RRAB    EQU   5                                                               
 @RADD    EQU   4                                                               
-         END   EX09         End of the programm                                
+         END                End of the programm                                

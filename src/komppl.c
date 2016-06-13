@@ -1571,8 +1571,8 @@ int OEN2()
                                                     /* операции END,          */
     i = 0;
 
-    while( FORMT[1][i] != '\x0' )                        /* ее операнда            */
-        ASS_CARD._BUFCARD.OPERAND[i] = FORMT[1][i++];   /*         и              */
+    //while( FORMT[1][i] != '\x0' )                        /* ее операнда            */
+    //    ASS_CARD._BUFCARD.OPERAND[i] = FORMT[1][i++];   /*         и              */
 
     memcpy(ASS_CARD._BUFCARD.COMM,"End of the programm", 19); /* построчного коментария */
           
