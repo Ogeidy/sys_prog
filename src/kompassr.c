@@ -340,6 +340,7 @@ int FDC()                                         /*подпр.обр.пс.оп�
             {                                               /*  на границу слова, то: */
                 CHADR = (CHADR /4 + 1) * 4;                 /*   уст.CHADR на гр.сл. и*/
                 T_SYM[ITSYM].ZNSYM = CHADR;                 /*   запомн. в табл.симв. */
+    printf("Change 1\n");
             }
             PRNMET = 'N';                                   /*  занулить PRNMET зн.'N'*/
         }
@@ -349,13 +350,13 @@ int FDC()                                         /*подпр.обр.пс.оп�
             {
                 size = atoi(&TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[2]);
                 T_SYM[ITSYM].DLSYM = size;
-                T_SYM[ITSYM].PRPER = 'R';                   
-                if (!(size % 4)) 
-                {
-                    size = size + 4 - (size % 4);
-                }
-                CHADR = (CHADR /4 + size/4) * 4;
+                T_SYM[ITSYM].PRPER = 'R';
+                // if (!(size % 4)) 
+                // {
+                //     size = size + 4 - (size % 4);
+                // }
                 T_SYM[ITSYM].ZNSYM = CHADR;
+    printf("Change 2, %04x\n", T_SYM[ITSYM].ZNSYM);
                 PRNMET = 'N'; 
             }
         }
@@ -366,12 +367,12 @@ int FDC()                                         /*подпр.обр.пс.оп�
                 size = atoi(&TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[2]);
                 T_SYM[ITSYM].DLSYM = size;
                 T_SYM[ITSYM].PRPER = 'R'; 
-                if (!(size % 4)) 
-                {
-                    size = size + 4 - (size % 4);
-                }
-                CHADR = (CHADR /4 + size/4) * 4;                  
+                // if (!(size % 4)) 
+                // {
+                //     size = size + 4 - (size % 4);
+                // }                 
                 T_SYM[ITSYM].ZNSYM = CHADR;
+    printf("Change 3, %04x\n", T_SYM[ITSYM].ZNSYM);
                 PRNMET = 'N'; 	
             }
         }
@@ -382,6 +383,7 @@ int FDC()                                         /*подпр.обр.пс.оп�
         if ( CHADR % 4 )                               /*и CHADR не кратен 4,то: */
             CHADR = (CHADR /4 + 1) * 4;                   /* установ.CHADR на гр.сл.*/
 
+    PRNMET = 'N'; 
     CHADR = CHADR + size;                              /*увелич.CHADR на 4 и     */
     return (0);                                     /*успешно завершить подпр.*/
 }
@@ -402,6 +404,7 @@ int FDS()                                         /*подпр.обр.пс.оп�
             {                                               /*  на границу слова, то: */
                 CHADR = (CHADR /4 + 1) * 4;                 /*   уст.CHADR на гр.сл. и*/
                 T_SYM[ITSYM].ZNSYM = CHADR;                 /*   запомн. в табл.симв. */
+    printf("Change 4\n");
             }
             PRNMET = 'N';                                   /*  занулить PRNMET зн.'N'*/
         }
@@ -431,6 +434,7 @@ int FEQU()                                        /*подпр.обр.пс.оп�
    )                                              /*то                      */
     {                                             /* запомнить в табл.симв.:*/
      T_SYM[ITSYM].ZNSYM = CHADR;                  /*  CHADR в поле ZNSYM,   */
+    printf("Change 5\n");
      T_SYM[ITSYM].DLSYM = 1;                      /*  1 в поле DLSYM,       */
      T_SYM[ITSYM].PRPER = 'R';                    /*  'R' в пооле PRPER     */
     }
@@ -439,6 +443,7 @@ int FEQU()                                        /*подпр.обр.пс.оп�
      T_SYM[ITSYM].ZNSYM = atoi (                  /* DC в поле ZNSYM,       */
       (char*) TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND
 			       );
+    printf("Change 6\n");
      T_SYM[ITSYM].DLSYM = 1;                      /* 1 в поле DLSYM,        */
      T_SYM[ITSYM].PRPER = 'A';                    /* 'A' в поле PRPER       */
     }
@@ -457,6 +462,7 @@ int FSTART()                                      /*подпр.обр.пс.оп�
     CHADR = ( CHADR + ( 8 - CHADR % 8 ) );        /*кратным                 */
    }                                              /*запомнить в табл.симв.: */
   T_SYM[ITSYM].ZNSYM = CHADR;                     /* CHADR в поле ZNSYM,    */
+    printf("Change 7\n");
   T_SYM[ITSYM].DLSYM = 1;                         /* 1 в поле DLSYM,        */
   T_SYM[ITSYM].PRPER = 'R';                       /* 'R' в поле PRPER       */
   PRNMET = 'N';                                   /*занул.PRNMET значен.'N' */
@@ -539,10 +545,11 @@ void STXT( int ARG )                              /*подпр.формир.TXT-
     memset ( TXT.STR_TXT.OPER , 64 , 8 );
     memcpy ( TXT.STR_TXT.OPER,BL_BUFFER , 4 ); 
     TXT.STR_TXT.DLNOP [1] = 4;
+    ARG = 4;
   }
   else if ( ARG == 2 )                                 /*формирование поля OPER  */
    {
-    memset ( TXT.STR_TXT.OPER , 64 , 4 );
+    memset ( TXT.STR_TXT.OPER , 64 , 8 );
     memcpy ( TXT.STR_TXT.OPER,RR.BUF_OP_RR , 2 ); /* для RR-формата         */
     TXT.STR_TXT.DLNOP [1] = 2;
    }
@@ -1062,6 +1069,7 @@ int SSS() {
                 rbase = 0;
                 delta = 0xfff - 1;
                 offset = T_SYM[i].ZNSYM;
+
                 for (j = 0; j < 15; j++)
                 {
                     if (T_BASR[j].PRDOST == 'Y' &&
@@ -1280,8 +1288,9 @@ main1:
     ITSYM += 1;                                   /* переход к след.стр.TSYM*/
     PRNMET = 'Y';                                 /* устан.призн.налич.метки*/
     memcpy ( T_SYM[ITSYM].IMSYM ,                 /* запомнить имя символа  */
-	TEK_ISX_KARTA.STRUCT_BUFCARD.METKA , 8 ); /* и                      */
+	   TEK_ISX_KARTA.STRUCT_BUFCARD.METKA , 8 ); /* и                      */
     T_SYM[ITSYM].ZNSYM = CHADR;                   /* его значение(отн.адр.) */
+printf("%d -> %04x\n", ITSYM, T_SYM[ITSYM].ZNSYM );
 
 /*
 ***** Б Л О К  поиска текущей операции среди псевдоопераций
