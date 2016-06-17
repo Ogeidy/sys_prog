@@ -1,9 +1,7 @@
-﻿#! /bin/bash 
-echo
-echo
+﻿#!/bin/bash
+
 echo
 echo "______________S T A R T   J O B_____________________"
-echo
 echo
 echo ' PL/1  ----->  Asswmbler    c o m p i l i n g'
 echo "continue?(y/n)"
@@ -11,10 +9,9 @@ read OTV
 if [ $OTV = "y" ] 
 then
  echo
- ./komppl.exe  examppl.pli
+ ./kpl.out  $1.pli
 fi
-echo
-echo
+
 echo
 echo ' Assembler  ----->  Object image   c o m p i l i n g'
 echo "continue?(y/n)"
@@ -22,10 +19,9 @@ read OTV
 if [ $OTV = "y" ] 
 then
  echo
-./kompassr.exe examppl.ass
+./kass.out $1.ass
 fi
-echo
-echo
+
 echo
 echo ' Load, run and debug Object image  '
 echo "continue?(y/n)"
@@ -33,9 +29,8 @@ read OTV
 if [ $OTV = "y" ] 
 then
  echo
-./absloadm.exe spis.mod
+./load.out spis.mod
 fi
-echo
-echo
+
 echo
 echo "______________F I N I S H     J O B__________________"

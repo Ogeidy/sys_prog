@@ -1,17 +1,18 @@
 EXAMP    START 0            Start of the programm                              
-         BALR  RBASE,0      Load the register of the base                      
-         USING *,RBASE      Set register as the base                           
-         L     RRAB,A       Load the variable to the register                  
-         A     RRAB,B       Formation of intermediatevalue                     
-         S     RRAB,C       Formation of intermediatevalue                     
-         A     RRAB,M       Formation of intermediatevalue                     
-         ST    RRAB,D       Formation of arithmetic expression                 
+         BALR  @RBASE,0     Load the register of the base                      
+         USING *,@RBASE     Set register as the base                           
+         L     @RRAB,A      Load the variable to the register                  
+         A     @RRAB,B      Formation of intermediatevalue                     
+         S     @RRAB,C      Formation of intermediatevalue                     
+         A     @RRAB,M      Formation of intermediatevalue                     
+         ST    @RRAB,D      Formation of arithmetic expression                 
          BCR   15,14        Exit from the programm                             
 A        DC    F'3'         Definition of variable                             
 B        DC    F'4'         Definition of variable                             
 C        DC    F'5'         Definition of variable                             
 M        DC    F'7'         Definition of variable                             
 D        DC    F'0'         Definition of variable                             
-RBASE    EQU   15                                                              
-RRAB     EQU   5                                                               
-         END   EXAMP        End of the programm                                
+@RBASE   EQU   15                                                              
+@RRAB    EQU   5                                                               
+@RADD    EQU   4                                                               
+         END                End of the programm                                
