@@ -1,4 +1,4 @@
-﻿#define DL_ASSTEXT 20
+#define DL_ASSTEXT 20
 #define DL_OBJTEXT 50                             /*длина об'ектн. текста   */
 #define NSYM 10                                   /*размер табл.символов    */
 #define NPOP 6                                    /*размер табл.псевдоопер. */
@@ -350,10 +350,6 @@ int FDC()                                         /*подпр.обр.пс.оп�
                 size = atoi(&TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[2]);
                 T_SYM[ITSYM].DLSYM = size;
                 T_SYM[ITSYM].PRPER = 'R';
-                // if (!(size % 4)) 
-                // {
-                //     size = size + 4 - (size % 4);
-                // }
                 T_SYM[ITSYM].ZNSYM = CHADR;
                 PRNMET = 'N'; 
             }
@@ -364,11 +360,7 @@ int FDC()                                         /*подпр.обр.пс.оп�
             {
                 size = atoi(&TEK_ISX_KARTA.STRUCT_BUFCARD.OPERAND[2]);
                 T_SYM[ITSYM].DLSYM = size;
-                T_SYM[ITSYM].PRPER = 'R'; 
-                // if (!(size % 4)) 
-                // {
-                //     size = size + 4 - (size % 4);
-                // }                 
+                T_SYM[ITSYM].PRPER = 'R';            
                 T_SYM[ITSYM].ZNSYM = CHADR;
                 PRNMET = 'N'; 	
             }
@@ -591,15 +583,15 @@ void STXT( int ARG )                              /*подпр.формир.TXT-
  {
   char *PTR;                                      /*рабоч.переменная-указат.*/
 
-  PTR = (char *)&CHADR;                           /*формирование поля ADOP  */
-  TXT.STR_TXT.ADOP[2]  = *PTR;                    /*TXT-карты в формате     */
-  TXT.STR_TXT.ADOP[1]  = *(PTR+1);                /*двоичного целого        */
-  TXT.STR_TXT.ADOP[0]  = '\x00';                  /*в соглашениях ЕС ЭВМ    */
-  memcpy ( TXT.STR_TXT.OPER , RX.BUF_OP_RX , 0);/* для RX-формата         */
-  TXT.STR_TXT.DLNOP [1] = ARG;
-  memcpy (TXT.STR_TXT.POLE9,ESD.STR_ESD.POLE11,8);/*формиров.идентифик.поля */
-  memcpy ( OBJTEXT[ITCARD] , TXT.BUF_TXT , 80 );  /*запись об'ектной карты  */
-  ITCARD += 1;                                    /*коррекц.инд-са своб.к-ты*/
+  // PTR = (char *)&CHADR;                           /*формирование поля ADOP  */
+  // TXT.STR_TXT.ADOP[2]  = *PTR;                    /*TXT-карты в формате     */
+  // TXT.STR_TXT.ADOP[1]  = *(PTR+1);                /*двоичного целого        */
+  // TXT.STR_TXT.ADOP[0]  = '\x00';                  // в соглашениях ЕС ЭВМ    
+  // memcpy ( TXT.STR_TXT.OPER , RX.BUF_OP_RX , 0);/* для RX-формата         */
+  // TXT.STR_TXT.DLNOP [1] = ARG;
+  // memcpy (TXT.STR_TXT.POLE9,ESD.STR_ESD.POLE11,8);/*формиров.идентифик.поля */
+  // memcpy ( OBJTEXT[ITCARD] , TXT.BUF_TXT , 80 );  /*запись об'ектной карты  */
+  // ITCARD += 1;                                    /*коррекц.инд-са своб.к-ты*/
   CHADR = CHADR + ARG;                            /*коррекц.счетчика адреса */
   return;
  }
@@ -637,26 +629,32 @@ int SDC()                                         /*подпр.обр.пс.оп�
       
       RX.OP_RX.B2D2 = atoi ( RAB );                 /*перевод ASCII-> int     */
       RAB = (char *) &RX.OP_RX.B2D2;                /*приведение к соглашениям*/
+        printf("1 -> %d\n", RX.OP_RX.B2D2);
+        printf("1 -> %s\n", RAB);
 
       char buffer[8];
       memset ( buffer , 64 , 8 );
-      buffer[size-1] = 0x0;
+      memset ( buffer , 0 , size-1 );
+      buffer[size-1] = RX.OP_RX.B2D2;
+      if (RX.OP_RX.B2D2 >= 0)
+      {
+        buffer[0] = 0xc<<4;
+      }
       if (size <= 4)
       {
-        memset ( buffer , 0 , size-1 );
         memcpy(RX.BUF_OP_RX, buffer, 4);
-        STXT (size);                                   /*формирование TXT-карты  */
+        printf("2 -> %s\n", RX.BUF_OP_RX);
+        STXT (size);                                 
       }
       else
       {
-        memset ( buffer , 0 , 7 );
         memcpy(PL8_BUFFER, buffer, 8);
         STXT (size);
-      }                                       /*формирование TXT-карты  */
-      return (0);            /*перевод ASCII-> int     */
+      }
+      return (0);
     }
-    else                                            /*иначе                   */
-        return (1);                                    /*сообщение об ошибке     */
+    else
+        return (1); 
 }
 
 /*..........................................................................*/
